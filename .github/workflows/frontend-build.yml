@@ -27,7 +27,7 @@ env:
   # Modified to use GHCR configuration
   REGISTRY: ghcr.io
   # Set your Docker Hub username and repository name
-  IMAGE_REPO: raids-lab/crater-frontend
+  IMAGE_REPO: ltservice1330/crater-frontend
 
 jobs:
   lint:
@@ -171,7 +171,7 @@ jobs:
         with:
           # list of Docker images to use as base name for tags
           images: |
-            ghcr.io/raids-lab/crater-frontend
+            ghcr.io/ltservice1330/crater-frontend
           # generate Docker tags based on the following events/attributes
           tags: |
             type=ref,event=branch
@@ -192,8 +192,8 @@ jobs:
 
       - uses: quartx-analytics/ghcr-cleaner@v1
         with:
-          owner-type: org # or user
-          token: ${{ secrets.PAT_TOKEN  }}
+          owner-type: user
+          token: ${{ secrets.GITHUB_TOKEN  }}
           repository-owner: ${{ github.repository_owner }}
           package-name: crater-frontend
           delete-untagged: true
