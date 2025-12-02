@@ -25,7 +25,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_REPO: raids-lab/storage-server
+  IMAGE_REPO: ltservice1330/storage-server
   # Golang-lint version
   GOLANGCI_LINT_VERSION: v2.6.2
 
@@ -183,8 +183,8 @@ jobs:
 
       - uses: quartx-analytics/ghcr-cleaner@v1
         with:
-          owner-type: org # or user
-          token: ${{ secrets.PAT_TOKEN  }}
+          owner-type: user
+          token: ${{ secrets.GITHUB_TOKEN }}
           repository-owner: ${{ github.repository_owner }}
           package-name: storage-server
           delete-untagged: true
