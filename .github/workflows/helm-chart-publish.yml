@@ -25,7 +25,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  REPOSITORY: raids-lab
+  REPOSITORY: ltservice1330
 
 jobs:
   publish-chart:
@@ -79,8 +79,8 @@ jobs:
       - name: Clean up old chart versions
         uses: quartx-analytics/ghcr-cleaner@v1
         with:
-          owner-type: org
-          token: ${{ secrets.PAT_TOKEN }}
+          owner-type: user
+          token: ${{ secrets.GITHUB_TOKEN }}
           repository-owner: ${{ github.repository_owner }}
           package-name: crater
           delete-untagged: true
