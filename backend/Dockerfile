@@ -31,7 +31,7 @@ COPY $BIN_DIR/bin-${TARGETPLATFORM//\//_}/controller .
 COPY $BIN_DIR/bin-${TARGETPLATFORM//\//_}/migrate .
 RUN chmod +x controller migrate
 
-EXPOSE 8088:8088
+EXPOSE 8088
 
 # entrypoint will be replaced by the command in k8s deployment, so it's just a placeholder
 ENTRYPOINT ["sh", "-c", "echo 'Use k8s deployment to start the service'"]
