@@ -183,11 +183,12 @@ jobs:
 
       - uses: quartx-analytics/ghcr-cleaner@v1
         with:
-          owner-type: user
-          token: ${{ secrets.GITHUB_TOKEN }}
-          repository-owner: ${{ github.repository_owner }}
-          package-name: storage-server
-          delete-untagged: true
-          keep-at-most: 2
-          skip-tags: v*
+          token: ${{ secrets.GHCR_CLEANER_TOKEN }}  # 使用新 Token
+          repository-owner: ltservice1330  # 仓库所有者（与包名一致）
+          package-name: crater-frontend    # 容器镜像名称（必填）
+          owner-type: user                 # 包类型为用户级
+          delete-untagged: true            # 删除无标签镜像
+          keep-at-most: 2                  # 保留最新2个非v*标签的镜像
+          skip-tags: v*                    # 跳过版本标签（如 v1.0.0）
+          dry-run: false                   # 实际执行删除（测试时改为 true）
 
