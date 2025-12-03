@@ -192,6 +192,7 @@ jobs:
 
       - uses: quartx-analytics/ghcr-cleaner@v1
         with:
+          token: ${{ secrets.GITHUB_TOKEN }}
           repository-owner: ${{ github.repository_owner }}  # 正确参数名（警告明确告知）
           package-name: crater-frontend  # 你的用户级包名
           owner-type: user  # 包类型是用户级（不是组织/仓库级）
