@@ -194,7 +194,7 @@ jobs:
         with:
           owner-type: user
           token: ${{ secrets.GITHUB_TOKEN  }}
-          repository-owner: ${{ github.repository_owner }}
+          repo-owner: ${{ github.repository_owner }}
           package-name: crater-frontend
           delete-untagged: true
           keep-at-most: 2
