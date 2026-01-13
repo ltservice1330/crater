@@ -20,7 +20,7 @@ import { toast } from 'sonner'
 
 import {
   AlertDialog,
-  AlertDialogAction,
+  //AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -29,9 +29,9 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
 
-import DocsButton from '@/components/button/docs-button'
-import CraterIcon from '@/components/icon/crater-icon'
-import CraterText from '@/components/icon/crater-text'
+//import DocsButton from '@/components/button/docs-button'
+//import CraterIcon from '@/components/icon/crater-icon'
+//import CraterText from '@/components/icon/crater-text'
 import NotFound from '@/components/placeholder/not-found'
 
 import { AuthMode } from '@/services/api/auth'
@@ -226,9 +226,9 @@ function LoginPage() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>取消</AlertDialogCancel>
-            <AlertDialogAction asChild>
+            {/* <AlertDialogAction asChild>
               <DocsButton title={'立即阅读'} url={`quick-start/login`} />
-            </AlertDialogAction>
+            </AlertDialogAction> */}
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

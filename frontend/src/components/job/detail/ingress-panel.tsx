@@ -34,7 +34,7 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 
-import DocsButton from '@/components/button/docs-button'
+//import DocsButton from '@/components/button/docs-button'
 import LoadableButton from '@/components/button/loadable-button'
 import { PodNamespacedName } from '@/components/codeblock/pod-container-dialog'
 import FormLabelMust from '@/components/form/form-label-must'
@@ -168,7 +168,7 @@ export const IngressPanel = ({ namespacedName, jobType }: IngressPanelProps) => 
         items={ingressList || []}
         renderItem={renderIngressItem}
         isLoading={isLoading}
-        docsButton={<DocsButton title={'帮助文档'} url={`toolbox/external-access/ingress-rule`} />}
+        // docsButton={<DocsButton title={'帮助文档'} url={`toolbox/external-access/ingress-rule`} />}
         addButton={
           <Button onClick={handleAddIngress} disabled={isCreating}>
             <Plus className="size-4" />

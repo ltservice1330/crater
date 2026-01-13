@@ -32,7 +32,7 @@ import { atomUserContext } from '@/utils/store'
 
 import { cn } from '@/lib/utils'
 
-import DocsButton from '../button/docs-button'
+// import DocsButton from '../button/docs-button'
 
 const isPublicFolder = (folder: string) => folder === 'public'
 

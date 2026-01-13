@@ -26,7 +26,7 @@ import JobPhaseLabel, { getJobPhaseLabel, jobPhases } from '@/components/badge/j
 import JobTypeLabel, { jobTypes } from '@/components/badge/job-type-badge'
 import NodeBadges from '@/components/badge/node-badges'
 import ResourceBadges from '@/components/badge/resource-badges'
-import DocsButton from '@/components/button/docs-button'
+//import DocsButton from '@/components/button/docs-button'
 import NivoPie from '@/components/chart/nivo-pie'
 import PieCard from '@/components/chart/pie-card'
 import { TimeDistance } from '@/components/custom/time-distance'

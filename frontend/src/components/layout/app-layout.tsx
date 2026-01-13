@@ -29,7 +29,7 @@ import { atomFixedLayout, globalSettings } from '@/utils/store'
 import { cn } from '@/lib/utils'
 
 import { NavGroupProps } from '../sidebar/types'
-import { WhatsNewDialog } from './what-is-new'
+//import { WhatsNewDialog } from './what-is-new'
 
 interface AppLayoutProps {
   groups: NavGroupProps[]
