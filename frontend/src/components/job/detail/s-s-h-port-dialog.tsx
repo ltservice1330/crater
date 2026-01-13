@@ -21,7 +21,7 @@ import { toast } from 'sonner'
 import {
   Dialog,
   DialogContent,
-  DialogFooter,
+  //DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,

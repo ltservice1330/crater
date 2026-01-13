@@ -34,7 +34,7 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 
-//import DocsButton from '@/components/button/docs-button'
+import DocsButton from '@/components/button/docs-button'
 import LoadableButton from '@/components/button/loadable-button'
 import { NamespacedName } from '@/components/codeblock/pod-container-dialog'
 import FormLabelMust from '@/components/form/form-label-must'
@@ -156,7 +156,7 @@ export function NodeportPanel({ namespacedName }: NodeportPanelProps) {
       <ExternalAccessList
         items={nodeportList}
         renderItem={renderNodeportItem}
-        // docsButton={<DocsButton title={'帮助文档'} url={`toolbox/external-access/nodeport-rule`} />}
+        docsButton={<DocsButton title={'帮助文档'} url={`toolbox/external-access/nodeport-rule`} />}
         addButton={
           <Button onClick={handleAddNodeport} disabled={isCreating}>
             <Plus className="size-4" />

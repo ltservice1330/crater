@@ -19,7 +19,7 @@ import {
   BoxIcon,
   DatabaseIcon,
   FlaskConicalIcon,
-  FolderIcon,
+  //FolderIcon,
   SettingsIcon,
   ShoppingBagIcon,
   SquareChartGanttIcon,
