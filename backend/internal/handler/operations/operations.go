@@ -5,7 +5,6 @@ import (
 	"k8s.io/client-go/kubernetes"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	"github.com/raids-lab/crater/dao/query"
 	"github.com/raids-lab/crater/internal/handler"
 	"github.com/raids-lab/crater/internal/service"
 	"github.com/raids-lab/crater/pkg/aitaskctl"
@@ -32,8 +31,6 @@ type OperationsMgr struct {
 }
 
 func NewOperationsMgr(conf *handler.RegisterConfig) handler.Manager {
-	q := query.Q
-	configService := service.NewConfigService(q)
 	instance := &OperationsMgr{
 		name:           "operations",
 		client:         conf.Client,
@@ -42,7 +39,7 @@ func NewOperationsMgr(conf *handler.RegisterConfig) handler.Manager {
 		taskService:    aitaskctl.NewDBService(),
 		taskController: conf.AITaskCtrl,
 		cronJobManager: conf.CronJobManager,
-		configService:  configService,
+		configService:  conf.ConfigService,
 	}
 	return instance
 }
@@ -66,6 +63,7 @@ func (mgr *OperationsMgr) RegisterAdmin(g *gin.RouterGroup) {
 	g.POST("/clean/clean-low-gpu-usage-job", mgr.HandleLowGPUUsageJobs)
 	g.POST("/clean/clean-long-running-job", mgr.HandleLongTimeRunningJobs)
 	g.POST("/clean/clean-waiting-jupyter-job", mgr.HandleWaitingJupyterJobs)
+	g.POST("/clean/clean-waiting-custom-job", mgr.HandleWaitingCustomJobs)
 	g.POST("/cronjob/config/name", mgr.GetCronjobNames)
 	g.POST("/cronjob/config/status", mgr.GetCronjobConfigStatus)
 	g.POST("/cronjob/record/time", mgr.GetCronjobRecordTimeRange)
