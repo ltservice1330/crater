@@ -152,11 +152,11 @@ const useUserSidebarGroups = (): NavGroupProps[] => {
             },
           ],
         },
-        {
-          title: t('navigation.fileManagement'),
-          icon: FolderIcon,
-          url: '/portal/files',
-        },
+        // {
+        //   title: t('navigation.fileManagement'),
+        //   icon: FolderIcon,
+        //   url: '/portal/files',
+        // },
       ],
     },
     {
@@ -174,10 +174,10 @@ const useUserSidebarGroups = (): NavGroupProps[] => {
               title: t('navigation.myOrders'),
               url: '/portal/more/orders',
             },
-            {
-              title: t('navigation.aboutCrater'),
-              url: '/portal/more/version',
-            },
+            // {
+            //   title: t('navigation.aboutCrater'),
+            //   url: '/portal/more/version',
+            // },
           ],
         },
       ],
