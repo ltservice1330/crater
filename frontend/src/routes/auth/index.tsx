@@ -43,7 +43,7 @@ import { useTheme } from '@/utils/theme'
 import { ForgotPasswordForm } from './-components/forgot-password-form'
 import { LoginForm } from './-components/login-form'
 import { SignupForm } from './-components/signup-form'
-import logo from './-components/logo.png'
+const logo = requre('./assets/logo.png')
 
 export const Route = createFileRoute('/auth/')({
   validateSearch: (search) => ({
