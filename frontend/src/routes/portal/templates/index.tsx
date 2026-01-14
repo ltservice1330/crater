@@ -17,7 +17,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import { PackageIcon } from 'lucide-react'
 
-import DocsButton from '@/components/button/docs-button'
+//import DocsButton from '@/components/button/docs-button'
 import { getNewJobLink } from '@/components/job/new-job-button'
 import TooltipLink from '@/components/label/tooltip-link'
 import DataList from '@/components/layout/data-list'

@@ -1,0 +1,4 @@
+{
+    "include": ["auth"],
+    "exclude": ["node_modules"]
+}

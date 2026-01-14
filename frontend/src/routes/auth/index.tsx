@@ -20,7 +20,7 @@ import { toast } from 'sonner'
 
 import {
   AlertDialog,
-  AlertDialogAction,
+  //AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -29,7 +29,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
 
-import DocsButton from '@/components/button/docs-button'
+//import DocsButton from '@/components/button/docs-button'
 import CraterIcon from '@/components/icon/crater-icon'
 import CraterText from '@/components/icon/crater-text'
 import NotFound from '@/components/placeholder/not-found'
@@ -43,7 +43,6 @@ import { useTheme } from '@/utils/theme'
 import { ForgotPasswordForm } from './-components/forgot-password-form'
 import { LoginForm } from './-components/login-form'
 import { SignupForm } from './-components/signup-form'
-import logo from './-components/logo.png'
 
 export const Route = createFileRoute('/auth/')({
   validateSearch: (search) => ({
@@ -124,15 +123,14 @@ function LoginPage() {
               className="flex h-14 w-full flex-row items-center justify-center text-white"
               onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
             >
-              {/*<CraterIcon className="mr-1.5 h-16 w-16" />*/}
-              <img src={logo} alt="Logo" className="mr-2 h-18 w-28" />
-              {/*<CraterText className="h-4" />*/}
+              <CraterIcon className="mr-1.5 h-16 w-16" />
+              <CraterText className="h-4" />
             </button>
           </div>
           {/* 底部版权信息 */}
           <div className="absolute bottom-10 left-10 z-20">
             <blockquote className="space-y-2">
-              <footer className="text-sm text-white/80">Copyright @ CHINA UNICOM</footer>
+              <footer className="text-sm text-white/80">Copyright</footer>
             </blockquote>
           </div>
           {/* 中间文字内容 */}
@@ -226,9 +224,9 @@ function LoginPage() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>取消</AlertDialogCancel>
-            <AlertDialogAction asChild>
+            {/* <AlertDialogAction asChild>
               <DocsButton title={'立即阅读'} url={`quick-start/login`} />
-            </AlertDialogAction>
+            </AlertDialogAction> */}
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

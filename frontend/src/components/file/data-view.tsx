@@ -22,7 +22,7 @@ import { useTranslation } from 'react-i18next'
 
 import { Button } from '@/components/ui/button'
 
-import DocsButton from '@/components/button/docs-button'
+//import DocsButton from '@/components/button/docs-button'
 import ListedButton from '@/components/button/listed-button'
 import { DataCreateForm } from '@/components/file/data-create-form'
 import DataList from '@/components/layout/data-list'

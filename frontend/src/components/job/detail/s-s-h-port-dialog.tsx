@@ -21,13 +21,13 @@ import { toast } from 'sonner'
 import {
   Dialog,
   DialogContent,
-  DialogFooter,
+  //DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
 
-import DocsButton from '@/components/button/docs-button'
+//import DocsButton from '@/components/button/docs-button'
 import LoadableButton from '@/components/button/loadable-button'
 import { CopyableCommand } from '@/components/codeblock/copyable-command'
 
@@ -112,9 +112,9 @@ export function SSHPortDialog({
             />
           </div>
         )}
-        <DialogFooter className="mt-2">
+        {/* <DialogFooter className="mt-2">
           <DocsButton title="帮助文档" url="toolbox/ssh/ssh-func" />
-        </DialogFooter>
+        </DialogFooter> */}
       </DialogContent>
     </Dialog>
   )

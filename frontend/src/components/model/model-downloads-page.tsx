@@ -23,7 +23,7 @@ import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 
 import ModelDownloadPhaseBadge from '@/components/badge/model-download-phase-badge'
-import DocsButton from '@/components/button/docs-button'
+//import DocsButton from '@/components/button/docs-button'
 import { TimeDistance } from '@/components/custom/time-distance'
 import ModelDownloadLabel from '@/components/label/model-download-label'
 import SimpleTooltip from '@/components/label/simple-tooltip'

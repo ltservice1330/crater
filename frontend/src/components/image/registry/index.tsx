@@ -46,7 +46,7 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
 
 import ImagePhaseBadge from '@/components/badge/image-phase-badge'
-import DocsButton from '@/components/button/docs-button'
+// import DocsButton from '@/components/button/docs-button'
 import ListedButton from '@/components/button/listed-button'
 import { TimeDistance } from '@/components/custom/time-distance'
 import ImageLabel from '@/components/label/image-label'

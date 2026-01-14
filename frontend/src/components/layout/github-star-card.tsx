@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useQuery } from '@tanstack/react-query'
-import { GithubIcon, StarIcon, XIcon } from 'lucide-react'
+//import { useQuery } from '@tanstack/react-query'
+//import { GithubIcon, StarIcon, XIcon } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
-const GITHUB_REPO = 'raids-lab/crater'
-const GITHUB_URL = `https://github.com/${GITHUB_REPO}`
+//const GITHUB_REPO = 'raids-lab/crater'
+//const GITHUB_URL = `https://github.com/${GITHUB_REPO}`
 const DISMISSED_KEY = 'github-star-card-dismissed'
 
 export function GitHubStarCard() {
@@ -29,26 +29,26 @@ export function GitHubStarCard() {
     setIsDismissed(dismissed === 'true')
   }, [])
 
-  const { data: starCount } = useQuery({
-    queryKey: ['github-stars', GITHUB_REPO],
-    queryFn: async () => {
-      try {
-        const response = await fetch(`https://api.github.com/repos/${GITHUB_REPO}`)
-        if (!response.ok) return null
-        const data = await response.json()
-        return data.stargazers_count as number
-      } catch {
-        return null
-      }
-    },
-    staleTime: 1000 * 60 * 60, // 1 hour
-    gcTime: 1000 * 60 * 60 * 24, // 24 hours
-  })
+  // const { data: starCount } = useQuery({
+  //   queryKey: ['github-stars', GITHUB_REPO],
+  //   queryFn: async () => {
+  //     try {
+  //       const response = await fetch(`https://api.github.com/repos/${GITHUB_REPO}`)
+  //       if (!response.ok) return null
+  //       const data = await response.json()
+  //       return data.stargazers_count as number
+  //     } catch {
+  //       return null
+  //     }
+  //   },
+  //   staleTime: 1000 * 60 * 60, // 1 hour
+  //   gcTime: 1000 * 60 * 60 * 24, // 24 hours
+  // })
 
-  const handleDismiss = () => {
-    localStorage.setItem(DISMISSED_KEY, 'true')
-    setIsDismissed(true)
-  }
+  // const handleDismiss = () => {
+  //   localStorage.setItem(DISMISSED_KEY, 'true')
+  //   setIsDismissed(true)
+  // }
 
   if (isDismissed) return null
   return null
