@@ -30,8 +30,8 @@ import {
 } from '@/components/ui/alert-dialog'
 
 //import DocsButton from '@/components/button/docs-button'
-//import CraterIcon from '@/components/icon/crater-icon'
-//import CraterText from '@/components/icon/crater-text'
+import CraterIcon from '@/components/icon/crater-icon'
+import CraterText from '@/components/icon/crater-text'
 import NotFound from '@/components/placeholder/not-found'
 
 import { AuthMode } from '@/services/api/auth'
@@ -43,7 +43,7 @@ import { useTheme } from '@/utils/theme'
 import { ForgotPasswordForm } from './-components/forgot-password-form'
 import { LoginForm } from './-components/login-form'
 import { SignupForm } from './-components/signup-form'
-const logo = requre('./assets/logo.png')
+//const logo = require('./assets/logo.png')
 
 export const Route = createFileRoute('/auth/')({
   validateSearch: (search) => ({
@@ -124,9 +124,9 @@ function LoginPage() {
               className="flex h-14 w-full flex-row items-center justify-center text-white"
               onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
             >
-              {/*<CraterIcon className="mr-1.5 h-16 w-16" />*/}
-              <img src={logo} alt="Logo" className="mr-2 h-18 w-28" />
-              {/*<CraterText className="h-4" />*/}
+              <CraterIcon className="mr-1.5 h-16 w-16" />
+              {/* <img src={logo} alt="Logo" className="mr-2 h-18 w-28" /> */}
+              <CraterText className="h-4" />
             </button>
           </div>
           {/* 底部版权信息 */}
