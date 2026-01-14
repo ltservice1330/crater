@@ -232,7 +232,7 @@ function RouteComponent() {
     <DataTable
       info={{
         title: t('navigation.interacitveJobs'),
-        description: '提供开箱即用的 Jupyter Lab， 可用于测试、调试等',
+        description: '提供开箱即用的 Jupyter Lab， 可用于模型训练等',
       }}
       storageKey="portal_job_interactive"
       query={interactiveQuery}

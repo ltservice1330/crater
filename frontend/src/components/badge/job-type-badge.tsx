@@ -52,7 +52,7 @@ const getJobTypeLabel = (
       return {
         label: 'Custom',
         color: 'text-highlight-purple bg-highlight-purple/10',
-        description: '自定义作业',
+        description: '模型部署作业',
       }
     case JobType.Jupyter:
       return {
@@ -82,7 +82,7 @@ const getJobTypeLabel = (
       return {
         label: 'Custom',
         color: 'text-highlight-purple bg-highlight-purple/10',
-        description: '自定义作业',
+        description: '模型部署作业',
       }
   }
 }

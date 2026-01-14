@@ -236,8 +236,8 @@ function RouteComponent() {
           className="grid flex-1 items-start gap-4 md:gap-x-6 lg:grid-cols-3"
         >
           <PageTitle
-            title="新建自定义作业"
-            description="使用自定义作业进行训练、推理等任务"
+            title="新建模型部署作业"
+            description="使用模型部署作业进行推理等任务"
             className="lg:col-span-3"
             tipContent={`版本 ${MetadataFormCustom.version}`}
           >

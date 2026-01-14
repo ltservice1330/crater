@@ -164,8 +164,8 @@ const VolcanoOverview = () => {
   return (
     <DataTable
       info={{
-        title: '自定义作业',
-        description: '使用自定义作业进行训练、推理等任务',
+        title: '模型部署作业',
+        description: '使用模型部署作业进行推理等任务',
       }}
       storageKey="portal_batch_job_overview"
       query={batchQuery}
