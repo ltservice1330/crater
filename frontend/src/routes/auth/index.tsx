@@ -43,7 +43,6 @@ import { useTheme } from '@/utils/theme'
 import { ForgotPasswordForm } from './-components/forgot-password-form'
 import { LoginForm } from './-components/login-form'
 import { SignupForm } from './-components/signup-form'
-//const logo = require('./assets/logo.png')
 
 export const Route = createFileRoute('/auth/')({
   validateSearch: (search) => ({
@@ -125,14 +124,13 @@ function LoginPage() {
               onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
             >
               <CraterIcon className="mr-1.5 h-16 w-16" />
-              {/* <img src={logo} alt="Logo" className="mr-2 h-18 w-28" /> */}
               <CraterText className="h-4" />
             </button>
           </div>
           {/* 底部版权信息 */}
           <div className="absolute bottom-10 left-10 z-20">
             <blockquote className="space-y-2">
-              <footer className="text-sm text-white/80">Copyright @ CHINA UNICOM</footer>
+              <footer className="text-sm text-white/80">Copyright</footer>
             </blockquote>
           </div>
           {/* 中间文字内容 */}

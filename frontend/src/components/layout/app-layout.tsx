@@ -29,7 +29,6 @@ import { atomFixedLayout, globalSettings } from '@/utils/store'
 import { cn } from '@/lib/utils'
 
 import { NavGroupProps } from '../sidebar/types'
-//import { WhatsNewDialog } from './what-is-new'
 
 interface AppLayoutProps {
   groups: NavGroupProps[]
@@ -83,7 +82,7 @@ const AppLayout = ({ groups, rawPath, children }: AppLayoutProps) => {
           className={cn(
             '@container/main flex flex-col gap-6 p-6 pt-0',
             fixedLayout &&
-            'absolute top-0 right-0 bottom-0 left-0 w-full grow overflow-hidden peer-[.header-fixed]/header:mt-16'
+              'absolute top-0 right-0 bottom-0 left-0 w-full grow overflow-hidden peer-[.header-fixed]/header:mt-16'
           )}
         >
           {children}
