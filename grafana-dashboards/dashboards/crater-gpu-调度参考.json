@@ -40,7 +40,7 @@
             "showLineNumbers": false,
             "showMiniMap": false
           },
-          "content": "# 空闲资源查询\n\n目前空闲资源查询会包含课题组专用节点、异常节点，请结合主页的节点概况，分析资源需求是否可以得到满足。",
+          "content": "# 空闲资源查询\n\n目前空闲资源情况。",
           "mode": "markdown"
         },
         "pluginVersion": "11.3.0+security-01",

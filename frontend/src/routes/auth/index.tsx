@@ -30,8 +30,8 @@ import {
 } from '@/components/ui/alert-dialog'
 
 //import DocsButton from '@/components/button/docs-button'
-import CraterIcon from '@/components/icon/crater-icon'
-import CraterText from '@/components/icon/crater-text'
+//import CraterIcon from '@/components/icon/crater-icon'
+//import CraterText from '@/components/icon/crater-text'
 import NotFound from '@/components/placeholder/not-found'
 
 import { AuthMode } from '@/services/api/auth'
@@ -40,8 +40,10 @@ import { queryAuthMode } from '@/services/query/auth'
 import { configUrlWebsiteBaseAtom } from '@/utils/store/config'
 import { useTheme } from '@/utils/theme'
 
+import centralpic from './-components/centralpic.png'
 import { ForgotPasswordForm } from './-components/forgot-password-form'
 import { LoginForm } from './-components/login-form'
+import logo from './-components/logo.png'
 import { SignupForm } from './-components/signup-form'
 
 export const Route = createFileRoute('/auth/')({
@@ -123,8 +125,9 @@ function LoginPage() {
               className="flex h-14 w-full flex-row items-center justify-center text-white"
               onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
             >
-              <CraterIcon className="mr-1.5 h-16 w-16" />
-              <CraterText className="h-4" />
+              {/* <CraterIcon className="mr-1.5 h-16 w-16" /> */}
+              <img src={logo} alt="Logo" className="mr-2 h-18 w-28" />
+              {/* <CraterText className="h-4" /> */}
             </button>
           </div>
           {/* 底部版权信息 */}
@@ -137,18 +140,9 @@ function LoginPage() {
           <div className="relative flex h-full items-center justify-center">
             <div className="z-10 px-6 py-8 text-left text-white lg:px-16 lg:py-12">
               <h1 className="mb-4 text-5xl leading-tight font-semibold">
-                <span className="dark:text-primary">欢迎体验</span>
-                <br />
-                反诈大模型
-                <br />
-                可视平台
+                <span className="dark:text-primary">欢迎体验反诈大模型可视平台</span>
               </h1>
-              {/*<DocsButton
-                variant="ghost"
-                className="dark:bg-primary dark:text-primary-foreground dark:hover:bg-primary/85 dark:hover:text-primary-foreground bg-white text-black hover:bg-slate-200 hover:text-black"
-                title="平台文档"
-                url="https://github.com/ltservice1330/crater/"
-              />*/}
+              <img src={centralpic} alt="Logo" className="mr-2 h-280 w-280" />
             </div>
           </div>
         </div>
