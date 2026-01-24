@@ -43,7 +43,6 @@ import { useTheme } from '@/utils/theme'
 import { ForgotPasswordForm } from './-components/forgot-password-form'
 import { LoginForm } from './-components/login-form'
 import { SignupForm } from './-components/signup-form'
-
 import centralpic from './-components/centralpic.png'
 
 export const Route = createFileRoute('/auth/')({
@@ -141,9 +140,7 @@ function LoginPage() {
               <h1 className="mb-4 text-5xl leading-tight font-semibold">
                 <span className="dark:text-primary">欢迎体验反诈大模型可视平台</span>
               </h1>
-              {
-                <img src={centralpic} alt="Logo" className="mr-2 h-280 w-280"/>
-              }
+              <img src={centralpic} alt="Logo" className="mr-2 h-280 w-280"/>
               {/*<DocsButton
                 variant="ghost"
                 className="dark:bg-primary dark:text-primary-foreground dark:hover:bg-primary/85 dark:hover:text-primary-foreground bg-white text-black hover:bg-slate-200 hover:text-black"
