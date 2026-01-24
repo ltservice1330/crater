@@ -33,7 +33,6 @@ import {
 import CraterIcon from '@/components/icon/crater-icon'
 import CraterText from '@/components/icon/crater-text'
 import NotFound from '@/components/placeholder/not-found'
-import centralpic from './-components/centralpic.png'
 
 import { AuthMode } from '@/services/api/auth'
 import { queryAuthMode } from '@/services/query/auth'
@@ -41,6 +40,7 @@ import { queryAuthMode } from '@/services/query/auth'
 import { configUrlWebsiteBaseAtom } from '@/utils/store/config'
 import { useTheme } from '@/utils/theme'
 
+import centralpic from './-components/centralpic.png'
 import { ForgotPasswordForm } from './-components/forgot-password-form'
 import { LoginForm } from './-components/login-form'
 import { SignupForm } from './-components/signup-form'
