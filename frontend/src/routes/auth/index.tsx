@@ -30,8 +30,8 @@ import {
 } from '@/components/ui/alert-dialog'
 
 //import DocsButton from '@/components/button/docs-button'
-import CraterIcon from '@/components/icon/crater-icon'
-import CraterText from '@/components/icon/crater-text'
+//import CraterIcon from '@/components/icon/crater-icon'
+//import CraterText from '@/components/icon/crater-text'
 import NotFound from '@/components/placeholder/not-found'
 
 import { AuthMode } from '@/services/api/auth'
