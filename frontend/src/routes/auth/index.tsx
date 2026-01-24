@@ -43,6 +43,7 @@ import { useTheme } from '@/utils/theme'
 import centralpic from './-components/centralpic.png'
 import { ForgotPasswordForm } from './-components/forgot-password-form'
 import { LoginForm } from './-components/login-form'
+import logo from './-components/logo.png'
 import { SignupForm } from './-components/signup-form'
 
 export const Route = createFileRoute('/auth/')({
@@ -124,8 +125,9 @@ function LoginPage() {
               className="flex h-14 w-full flex-row items-center justify-center text-white"
               onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
             >
-              <CraterIcon className="mr-1.5 h-16 w-16" />
-              <CraterText className="h-4" />
+              {/* <CraterIcon className="mr-1.5 h-16 w-16" /> */}
+              <img src={logo} alt="Logo" className="mr-2 h-18 w-28" />
+              {/* <CraterText className="h-4" /> */}
             </button>
           </div>
           {/* 底部版权信息 */}
