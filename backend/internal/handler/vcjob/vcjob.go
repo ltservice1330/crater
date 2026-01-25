@@ -369,7 +369,7 @@ func (mgr *VolcanojobMgr) GetAllJobsInDays(c *gin.Context) {
 	}
 
 	// Use default value of 7 if days parameter is not provided or is zero
-	days := -1
+	days := 360
 	if req.Days > 0 {
 		days = req.Days
 	}

@@ -318,7 +318,7 @@ function Overview() {
       <div className="grid gap-4 lg:grid-cols-2">
         <PageTitle
           title={`欢迎回来，${userInfo?.nickname} 👋`}
-          description="反诈大模型可视化平台"
+          description="反诈大模型管理可视化系统"
           className="lg:col-span-2"
         >
           <div className="flex flex-row gap-3">
