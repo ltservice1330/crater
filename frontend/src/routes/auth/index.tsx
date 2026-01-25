@@ -126,7 +126,7 @@ function LoginPage() {
               onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
             >
               {/* <CraterIcon className="mr-1.5 h-16 w-16" /> */}
-              <img src={logo} alt="Logo" className="mr-2 w-[28px] h-auto" />
+              <img src={logo} alt="Logo" className="mr-2 h-auto w-[28px]" />
               {/* <CraterText className="h-4" /> */}
             </button>
           </div>
@@ -142,7 +142,7 @@ function LoginPage() {
               <h1 className="mb-4 text-5xl leading-tight font-semibold">
                 <span className="dark:text-primary">欢迎体验反诈大模型管理可视化系统</span>
               </h1>
-              <img src={centralpic} alt="Logo" className="mr-2 w-[280px] h-auto " />
+              <img src={centralpic} alt="Logo" className="mr-2 h-auto w-[280px]" />
             </div>
           </div>
         </div>
