@@ -19,7 +19,7 @@ import {
   BoxIcon,
   DatabaseIcon,
   FlaskConicalIcon,
-  //FolderIcon,
+  FolderIcon,
   SettingsIcon,
   ShoppingBagIcon,
   SquareChartGanttIcon,
@@ -152,11 +152,11 @@ const useUserSidebarGroups = (): NavGroupProps[] => {
             },
           ],
         },
-        // {
-        //   title: t('navigation.fileManagement'),
-        //   icon: FolderIcon,
-        //   url: '/portal/files',
-        // },
+        {
+          title: t('navigation.fileManagement'),
+          icon: FolderIcon,
+          url: '/portal/files',
+        },
       ],
     },
     {

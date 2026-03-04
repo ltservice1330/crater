@@ -219,7 +219,7 @@ export default function FolderNavigation({
                   </p>
                 </div>
                 {/* Usage Metrics */}
-                <div className={`rounded-2xl p-4 ${theme.bg} relative z-10 mb-6 border`}>
+                {/*<div className={`rounded-2xl p-4 ${theme.bg} relative z-10 mb-6 border`}>
                   <div className="mb-2 flex items-baseline justify-between">
                     <div className="flex items-baseline gap-1">
                       <span className="text-foreground text-lg font-bold">???</span>
@@ -241,7 +241,7 @@ export default function FolderNavigation({
                     <span className="text-highlight-slate">??% 已使用</span>
                     <span className="text-highlight-slate">{r.size} 个文件</span>
                   </div>
-                </div>
+                </div>*/}
                 {/* Action Button */}
                 <button
                   className={cn(

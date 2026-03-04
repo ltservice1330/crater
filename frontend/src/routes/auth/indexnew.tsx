@@ -20,7 +20,7 @@ import { toast } from 'sonner'
 
 import {
   AlertDialog,
-  //AlertDialogAction,
+  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -29,7 +29,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
 
-//import DocsButton from '@/components/button/docs-button'
+import DocsButton from '@/components/button/docs-button'
 //import CraterIcon from '@/components/icon/crater-icon'
 //import CraterText from '@/components/icon/crater-text'
 import NotFound from '@/components/placeholder/not-found'
@@ -40,7 +40,7 @@ import { queryAuthMode } from '@/services/query/auth'
 import { configUrlWebsiteBaseAtom } from '@/utils/store/config'
 import { useTheme } from '@/utils/theme'
 
-import bcgd from './-components/bcgd.jpg'
+import bcgd from './-components/bcgd.png'
 import { ForgotPasswordForm } from './-components/forgot-password-form'
 import { LoginForm } from './-components/login-form'
 import logo from './-components/logo.png'
@@ -200,6 +200,7 @@ function LoginPage() {
         )}
         </div>
       </div>
+
       {/* ACT模式下的注册引导对话框 */}
       <AlertDialog open={showRegisterDialog} onOpenChange={setShowRegisterDialog}>
         <AlertDialogContent>
@@ -207,17 +208,17 @@ function LoginPage() {
             <AlertDialogTitle>账号激活指南</AlertDialogTitle>
             <AlertDialogDescription>
               第一次登录平台时，需要从 ACT 门户同步用户信息，请参考「
-              <a href={`${website}/docs/user/quick-start/login`} className="text-primary underline">
+              <a href= "text-primary underline">
                 平台访问指南
-              </a>
+              </a >
               」激活您的账号。
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>取消</AlertDialogCancel>
-            {/* <AlertDialogAction asChild>
+            <AlertDialogAction asChild>
               <DocsButton title={'立即阅读'} url={`quick-start/login`} />
-            </AlertDialogAction> */}
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
