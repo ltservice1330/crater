@@ -160,20 +160,20 @@ function LoginPage() {
               </div>
             </div>
           ) : showForgotPassword && currentMode === AuthMode.NORMAL ? (
-          <div className="mx-auto w-[400px] space-y-6 rounded-lg bg-white/95 p-8 shadow-2xl backdrop-blur-sm dark:bg-slate-900/95">
-            <div className="space-y-2 text-center">
-              <h1 className="text-3xl font-bold">重置密码</h1>
-              <p className="text-muted-foreground text-sm">我们将向您的邮箱发送密码重置链接</p>
+            <div className="mx-auto w-[400px] space-y-6 rounded-lg bg-white/95 p-8 shadow-2xl backdrop-blur-sm dark:bg-slate-900/95">
+              <div className="space-y-2 text-center">
+                <h1 className="text-3xl font-bold">重置密码</h1>
+                <p className="text-muted-foreground text-sm">我们将向您的邮箱发送密码重置链接</p>
+              </div>
+              <ForgotPasswordForm />
+              <div className="text-muted-foreground text-center text-sm">
+                想起密码了？
+                <button onClick={handleBackToLogin} className="underline">
+                  返回登录
+                </button>
+              </div>
             </div>
-            <ForgotPasswordForm />
-            <div className="text-muted-foreground text-center text-sm">
-              想起密码了？
-              <button onClick={handleBackToLogin} className="underline">
-                返回登录
-              </button>
-            </div>
-          </div>
-        ) : (
+          ) : (
           <div className="mx-auto w-[400px] space-y-6 rounded-lg bg-white/95 p-8 shadow-2xl backdrop-blur-sm dark:bg-slate-900/95">
             <div className="space-y-2 text-center">
               <h1 className="text-3xl font-bold">用户登录</h1>
@@ -181,7 +181,7 @@ function LoginPage() {
                 {currentMode === AuthMode.ACT
                   ? '已接入 ACT 实验室统一身份认证'
                   : '请输入您的账号和密码'}
-              </p >
+              </p>
             </div>
             <LoginForm
               searchParams={searchParams}
