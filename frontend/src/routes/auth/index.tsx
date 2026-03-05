@@ -209,7 +209,7 @@ function LoginPage() {
               第一次登录平台时，需要从 ACT 门户同步用户信息，请参考「
               <a href={`${website}/docs/user/quick-start/login`} className="text-primary underline">
                 平台访问指南
-              </a >
+              </a>
               」激活您的账号。
             </AlertDialogDescription>
           </AlertDialogHeader>
