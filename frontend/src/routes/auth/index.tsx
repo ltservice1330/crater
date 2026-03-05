@@ -147,7 +147,7 @@ function LoginPage() {
         {/* 右侧登录表单区域 */}
         <div className="flex h-full items-center justify-center py-12">
         {showSignup && currentMode === AuthMode.NORMAL ? (
-          <div className="mx-auto w-[400px] space-y-6 rounded-lg bg-white/95 dark:bg-slate-900/95 p-8 shadow-2xl backdrop-blur-sm">
+          <div className="mx-auto w-[400px] space-y-6 rounded-lg bg-white/95 p-8 shadow-2xl backdrop-blur-sm dark:bg-slate-900/95">
             <div className="space-y-2 text-center">
               <h1 className="text-3xl font-bold">用户注册</h1>
               <p className="text-muted-foreground text-sm">仅面向特定用户提供此功能</p >
@@ -161,7 +161,7 @@ function LoginPage() {
             </div>
           </div>
         ) : showForgotPassword && currentMode === AuthMode.NORMAL ? (
-          <div className="mx-auto w-[400px] space-y-6 rounded-lg bg-white/95 dark:bg-slate-900/95 p-8 shadow-2xl backdrop-blur-sm">
+          <div className="mx-auto w-[400px] space-y-6 rounded-lg bg-white/95 p-8 shadow-2xl backdrop-blur-sm dark:bg-slate-900/95">
             <div className="space-y-2 text-center">
               <h1 className="text-3xl font-bold">重置密码</h1>
               <p className="text-muted-foreground text-sm">我们将向您的邮箱发送密码重置链接</p >
@@ -175,7 +175,7 @@ function LoginPage() {
             </div>
           </div>
         ) : (
-          <div className="mx-auto w-[400px] space-y-6 rounded-lg bg-white/95 dark:bg-slate-900/95 p-8 shadow-2xl backdrop-blur-sm">
+          <div className="mx-auto w-[400px] space-y-6 rounded-lg bg-white/95 p-8 shadow-2xl backdrop-blur-sm dark:bg-slate-900/95">
             <div className="space-y-2 text-center">
               <h1 className="text-3xl font-bold">用户登录</h1>
               <p className="text-muted-foreground text-sm">
@@ -200,6 +200,7 @@ function LoginPage() {
         )}
         </div>
       </div>
+
       {/* ACT模式下的注册引导对话框 */}
       <AlertDialog open={showRegisterDialog} onOpenChange={setShowRegisterDialog}>
         <AlertDialogContent>
@@ -209,7 +210,7 @@ function LoginPage() {
               第一次登录平台时，需要从 ACT 门户同步用户信息，请参考「
               <a href={`${website}/docs/user/quick-start/login`} className="text-primary underline">
                 平台访问指南
-              </a>
+              </a >
               」激活您的账号。
             </AlertDialogDescription>
           </AlertDialogHeader>
