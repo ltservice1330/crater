@@ -145,21 +145,21 @@ function LoginPage() {
         <div className="hidden lg:block" />
         {/* 右侧登录表单区域 */}
         <div className="flex h-full items-center justify-center py-12">
-        {showSignup && currentMode === AuthMode.NORMAL ? (
-          <div className="mx-auto w-[400px] space-y-6 rounded-lg bg-white/95 p-8 shadow-2xl backdrop-blur-sm dark:bg-slate-900/95">
-            <div className="space-y-2 text-center">
-              <h1 className="text-3xl font-bold">用户注册</h1>
-              <p className="text-muted-foreground text-sm">仅面向特定用户提供此功能</p>
+          {showSignup && currentMode === AuthMode.NORMAL ? (
+            <div className="mx-auto w-[400px] space-y-6 rounded-lg bg-white/95 p-8 shadow-2xl backdrop-blur-sm dark:bg-slate-900/95">
+              <div className="space-y-2 text-center">
+                <h1 className="text-3xl font-bold">用户注册</h1>
+                <p className="text-muted-foreground text-sm">仅面向特定用户提供此功能</p>
+              </div>
+              <SignupForm />
+              <div className="text-muted-foreground text-center text-sm">
+                已有账号？
+                <button onClick={handleBackToLogin} className="underline">
+                  立即登录
+                </button>
+              </div>
             </div>
-            <SignupForm />
-            <div className="text-muted-foreground text-center text-sm">
-              已有账号？
-              <button onClick={handleBackToLogin} className="underline">
-                立即登录
-              </button>
-            </div>
-          </div>
-        ) : showForgotPassword && currentMode === AuthMode.NORMAL ? (
+          ) : showForgotPassword && currentMode === AuthMode.NORMAL ? (
           <div className="mx-auto w-[400px] space-y-6 rounded-lg bg-white/95 p-8 shadow-2xl backdrop-blur-sm dark:bg-slate-900/95">
             <div className="space-y-2 text-center">
               <h1 className="text-3xl font-bold">重置密码</h1>
