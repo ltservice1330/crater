@@ -120,7 +120,7 @@ function LoginPage() {
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
       }}
-    > 
+    >
       {/* 顶部Logo */}
       <div className="absolute top-10 left-10 z-20 flex items-center text-lg font-medium">
         <button
@@ -128,7 +128,7 @@ function LoginPage() {
           onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
           title="Switch theme"
         >
-          < img src={logo} alt="Logo" className="mr-2 h-18 w-28" />
+          <img src={logo} alt="Logo" className="mr-2 h-18 w-28" />
         </button>
       </div>
 
@@ -143,14 +143,13 @@ function LoginPage() {
       <div className="relative z-10 grid h-full lg:grid-cols-2">
         {/* 左侧空白区域（用于背景展示） */}
         <div className="hidden lg:block" />
-        
         {/* 右侧登录表单区域 */}
         <div className="flex h-full items-center justify-center py-12">
         {showSignup && currentMode === AuthMode.NORMAL ? (
           <div className="mx-auto w-[400px] space-y-6 rounded-lg bg-white/95 p-8 shadow-2xl backdrop-blur-sm dark:bg-slate-900/95">
             <div className="space-y-2 text-center">
               <h1 className="text-3xl font-bold">用户注册</h1>
-              <p className="text-muted-foreground text-sm">仅面向特定用户提供此功能</p >
+              <p className="text-muted-foreground text-sm">仅面向特定用户提供此功能</p>
             </div>
             <SignupForm />
             <div className="text-muted-foreground text-center text-sm">
@@ -164,7 +163,7 @@ function LoginPage() {
           <div className="mx-auto w-[400px] space-y-6 rounded-lg bg-white/95 p-8 shadow-2xl backdrop-blur-sm dark:bg-slate-900/95">
             <div className="space-y-2 text-center">
               <h1 className="text-3xl font-bold">重置密码</h1>
-              <p className="text-muted-foreground text-sm">我们将向您的邮箱发送密码重置链接</p >
+              <p className="text-muted-foreground text-sm">我们将向您的邮箱发送密码重置链接</p>
             </div>
             <ForgotPasswordForm />
             <div className="text-muted-foreground text-center text-sm">
