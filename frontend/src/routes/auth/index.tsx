@@ -174,29 +174,29 @@ function LoginPage() {
               </div>
             </div>
           ) : (
-          <div className="mx-auto w-[400px] space-y-6 rounded-lg bg-white/95 p-8 shadow-2xl backdrop-blur-sm dark:bg-slate-900/95">
-            <div className="space-y-2 text-center">
-              <h1 className="text-3xl font-bold">用户登录</h1>
-              <p className="text-muted-foreground text-sm">
-                {currentMode === AuthMode.ACT
-                  ? '已接入 ACT 实验室统一身份认证'
-                  : '请输入您的账号和密码'}
-              </p>
+            <div className="mx-auto w-[400px] space-y-6 rounded-lg bg-white/95 p-8 shadow-2xl backdrop-blur-sm dark:bg-slate-900/95">
+              <div className="space-y-2 text-center">
+                <h1 className="text-3xl font-bold">用户登录</h1>
+                <p className="text-muted-foreground text-sm">
+                  {currentMode === AuthMode.ACT
+                    ? '已接入 ACT 实验室统一身份认证'
+                    : '请输入您的账号和密码'}
+                </p>
+              </div>
+              <LoginForm
+                searchParams={searchParams}
+                login={auth.login}
+                authMode={currentMode}
+                onForgotPasswordClick={handleForgotPasswordClick}
+              />
+              <div className="text-muted-foreground text-center text-sm">
+                还没有账号？
+                <button onClick={handleRegisterClick} className="underline">
+                  立即注册
+                </button>
+              </div>
             </div>
-            <LoginForm
-              searchParams={searchParams}
-              login={auth.login}
-              authMode={currentMode}
-              onForgotPasswordClick={handleForgotPasswordClick}
-            />
-            <div className="text-muted-foreground text-center text-sm">
-              还没有账号？
-              <button onClick={handleRegisterClick} className="underline">
-                立即注册
-              </button>
-            </div>
-          </div>
-        )}
+          )}
         </div>
       </div>
 
