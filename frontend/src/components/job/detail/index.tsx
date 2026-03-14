@@ -358,7 +358,7 @@ export default function BaseCore({ jobName, ...props }: DetailPageCoreProps & { 
         {
           title: '状态描述',
           icon: ActivityIcon,
-          value: getJobPhaseLabel(data.status).label
+          value: getJobPhaseLabel(data.status).label,
         },
         {
           title: '创建于',
