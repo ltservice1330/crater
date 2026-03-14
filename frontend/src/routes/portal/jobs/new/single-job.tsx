@@ -137,7 +137,7 @@ const dataProcessor = (data: FormSchema) => {
   return data
 }
 
-export const EnvCard = '环境变量'
+export const EnvCard = '预设参数'
 
 function RouteComponent() {
   const searchParams = Route.useSearch()
