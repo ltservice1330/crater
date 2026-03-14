@@ -43,6 +43,7 @@ import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 
 import JobPhaseLabel from '@/components/badge/job-phase-badge'
+import { getJobPhaseLabel } from '@/components/badge/job-phase-badge'
 import JobTypeLabel from '@/components/badge/job-type-badge'
 import TooltipButton from '@/components/button/tooltip-button'
 import { CodeContent } from '@/components/codeblock/config-dialog'
@@ -353,6 +354,11 @@ export default function BaseCore({ jobName, ...props }: DetailPageCoreProps & { 
           title: '状态',
           icon: ActivityIcon,
           value: <JobPhaseLabel jobPhase={data.status} />,
+        },
+        {
+          title: '状态描述',
+          icon: ActivityIcon,
+          value: getJobPhaseLabel(data.status).label,
         },
         {
           title: '创建于',

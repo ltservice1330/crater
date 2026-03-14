@@ -40,7 +40,7 @@ export function EnvFormCard<
   open,
   setOpen,
   className,
-  cardTitle = '环境变量',
+  cardTitle = '预设参数',
 }: {
   form: UseFormReturn<T>
   open: boolean

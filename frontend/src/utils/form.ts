@@ -166,10 +166,10 @@ export type VolumeMountsSchema = z.infer<typeof volumeMountsSchema>
 export const envsSchema = z.array(
   z.object({
     name: z.string().min(1, {
-      message: '环境变量名不能为空',
+      message: '预设参数名不能为空',
     }),
     value: z.string().min(1, {
-      message: '环境变量值不能为空',
+      message: '预设参数值不能为空',
     }),
   })
 )
