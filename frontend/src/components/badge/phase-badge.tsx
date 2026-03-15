@@ -40,10 +40,9 @@ export const PhaseBadge = <T,>({
   // 如果禁用 tooltip,直接返回 badge
   if (disableDefaultTooltip) {
     return (
-      <Badge 
+      <Badge
         className={cn(
-          'cursor-help border-none flex items-center gap-1 px-2 py-0.5',
-          data.color
+          'flex cursor-help items-center gap-1 border-none px-2 py-0.5', data.color
         )}
         variant="outline"
       >
