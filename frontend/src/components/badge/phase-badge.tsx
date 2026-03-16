@@ -38,29 +38,29 @@ export const PhaseBadge = <T,>({
   const data = getPhaseLabel(phase)
 
   // 如果禁用 tooltip,直接返回 badge
-  if (disableDefaultTooltip) {
-    return (
-      <Badge
-        className={cn('flex cursor-help items-center gap-1 border-none px-2 py-0.5', data.color)}
-        variant="outline"
-      >
-        {data.label}
-      </Badge>
-    )
-  }
-
+  //if (disableDefaultTooltip) {
   return (
-    <TooltipProvider delayDuration={100}>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Badge className={cn('cursor-help border-none', data.color)} variant="outline">
-            <div>{data.label}</div>
-          </Badge>
-        </TooltipTrigger>
-        <TooltipContent>
-          <p>{data.description}</p>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+    <Badge
+      className={cn('flex cursor-help items-center gap-1 border-none px-2 py-0.5', data.color)}
+      variant="outline"
+    >
+      {data.label}
+    </Badge>
   )
+  //}
+
+  // return (
+  //   <TooltipProvider delayDuration={100}>
+  //     <Tooltip>
+  //       <TooltipTrigger asChild>
+  //         <Badge className={cn('cursor-help border-none', data.color)} variant="outline">
+  //           <div>{data.label}</div>
+  //         </Badge>
+  //       </TooltipTrigger>
+  //       <TooltipContent>
+  //         <p>{data.description}</p>
+  //       </TooltipContent>
+  //     </Tooltip>
+  //   </TooltipProvider>
+  // )
 }
