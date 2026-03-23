@@ -33,7 +33,7 @@ interface PhaseBadgeProps<T> {
 export const PhaseBadge = <T,>({
   phase,
   getPhaseLabel,
-  //disableDefaultTooltip = true,
+  disableDefaultTooltip = true,
 }: PhaseBadgeProps<T>) => {
   const data = getPhaseLabel(phase)
 

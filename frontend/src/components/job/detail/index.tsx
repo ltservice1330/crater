@@ -43,7 +43,6 @@ import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 
 import JobPhaseLabel from '@/components/badge/job-phase-badge'
-import { getJobPhaseLabel } from '@/components/badge/job-phase-badge'
 import JobTypeLabel from '@/components/badge/job-type-badge'
 import TooltipButton from '@/components/button/tooltip-button'
 import { CodeContent } from '@/components/codeblock/config-dialog'
