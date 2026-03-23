@@ -18,9 +18,9 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
 import { isAxiosError } from 'axios'
 import { useAtomValue, useSetAtom } from 'jotai'
+import { RefreshCw } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { RefreshCw } from 'lucide-react'
 import { toast } from 'sonner'
 import { z } from 'zod'
 
@@ -163,7 +163,7 @@ export function LoginForm({
         })
         form.setValue('captcha', '')
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error('加载验证码失败')
     } finally {
       setLoadingCaptcha(false)
@@ -208,7 +208,7 @@ export function LoginForm({
     onError: (error) => {
       // Reload CAPTCHA on error
       loadCaptcha()
-      
+
       if (isAxiosError<IErrorResponse>(error)) {
         const errorCode = error.response?.data.code
         switch (errorCode) {
@@ -307,16 +307,12 @@ export function LoginForm({
                 <FormLabel>验证码</FormLabel>
                 <div className="flex gap-2">
                   <FormControl>
-                    <Input
-                      placeholder="请输入验证码"
-                      maxLength={4}
-                      autoComplete="off"
-                      {...field}
+                    <Input placeholder="请输入验证码" maxLength={4} autoComplete="off" {...field}
                     />
                   </FormControl>
                   <div className="relative flex items-center">
                     {loadingCaptcha ? (
-                      <div className="flex h-[40px] w-[120px] items-center justify-center rounded border bg-muted">
+                      <div className="bg-muted flex h-[40px] w-[120px] items-center justify-center rounded border">
                         <RefreshCw className="h-4 w-4 animate-spin" />
                       </div>
                     ) : captchaData ? (
