@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { Badge } from '@/components/ui/badge'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+//import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
 import { cn } from '@/lib/utils'
 
@@ -33,7 +33,7 @@ interface PhaseBadgeProps<T> {
 export const PhaseBadge = <T,>({
   phase,
   getPhaseLabel,
-  disableDefaultTooltip = true,
+  //disableDefaultTooltip = true,
 }: PhaseBadgeProps<T>) => {
   const data = getPhaseLabel(phase)
 
