@@ -356,11 +356,6 @@ export default function BaseCore({ jobName, ...props }: DetailPageCoreProps & { 
           value: <JobPhaseLabel jobPhase={data.status} />,
         },
         {
-          title: '状态描述',
-          icon: ActivityIcon,
-          value: getJobPhaseLabel(data.status).label,
-        },
-        {
           title: '创建于',
           icon: CalendarIcon,
           value: <TimeDistance date={data.createdAt} />,
