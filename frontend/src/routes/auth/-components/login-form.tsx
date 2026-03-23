@@ -163,7 +163,7 @@ export function LoginForm({
         })
         form.setValue('captcha', '')
       }
-    } catch (_error) {
+    } catch {
       toast.error('加载验证码失败')
     } finally {
       setLoadingCaptcha(false)
@@ -307,8 +307,7 @@ export function LoginForm({
                 <FormLabel>验证码</FormLabel>
                 <div className="flex gap-2">
                   <FormControl>
-                    <Input placeholder="请输入验证码" maxLength={4} autoComplete="off" {...field}
-                    />
+                    <Input placeholder="请输入验证码" maxLength={4} autoComplete="off" {...field} />
                   </FormControl>
                   <div className="relative flex items-center">
                     {loadingCaptcha ? (
