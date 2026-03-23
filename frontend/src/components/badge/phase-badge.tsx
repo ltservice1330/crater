@@ -38,7 +38,17 @@ export const PhaseBadge = <T,>({
   const data = getPhaseLabel(phase)
 
   // 如果禁用 tooltip,直接返回 badge
-  //if (disableDefaultTooltip) {
+  if (disableDefaultTooltip) {
+    return (
+      <Badge
+        className={cn('flex cursor-help items-center gap-1 border-none px-2 py-0.5', data.color)}
+        variant="outline"
+      >
+        {data.label}
+      </Badge>
+    )
+  }
+
   return (
     <Badge
       className={cn('flex cursor-help items-center gap-1 border-none px-2 py-0.5', data.color)}
