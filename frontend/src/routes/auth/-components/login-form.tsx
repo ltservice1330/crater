@@ -20,6 +20,7 @@ import { isAxiosError } from 'axios'
 import { useAtomValue, useSetAtom } from 'jotai'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { RefreshCw } from 'lucide-react'
 import { toast } from 'sonner'
 import { z } from 'zod'
 
@@ -56,6 +57,7 @@ import DocsButton from '@/components/button/docs-button'
 import LoadableButton from '@/components/button/loadable-button'
 
 import { AuthMode, IAuthResponse, ILogin } from '@/services/api/auth'
+import { apiGenerateCaptcha } from '@/services/api/captcha'
 import {
   ERROR_INVALID_CREDENTIALS,
   ERROR_MUST_REGISTER,
@@ -99,6 +101,14 @@ const formSchema = z.object({
     .max(20, {
       message: '密码最多 20 个字符',
     }),
+  captcha: z
+    .string()
+    .min(4, {
+      message: '验证码不能为空',
+    })
+    .max(4, {
+      message: '验证码为4位数字',
+    }),
   // 必须勾选隐私政策,否则无法通过校验
   acceptPrivacy: z.boolean().refine((val) => val === true, {
     message: '请先阅读并同意隐私政策方可登录',
@@ -119,6 +129,8 @@ export function LoginForm({
   searchParams,
 }: LoginFormProps) {
   const [open, setOpen] = useState(false)
+  const [captchaData, setCaptchaData] = useState<{ id: string; image: string } | null>(null)
+  const [loadingCaptcha, setLoadingCaptcha] = useState(false)
   const queryClient = useQueryClient()
   const navigate = useNavigate()
   const setUserState = useSetAtom(atomUserInfo)
@@ -134,17 +146,50 @@ export function LoginForm({
     defaultValues: {
       username: '',
       password: '',
+      captcha: '',
       acceptPrivacy: privacyAccepted,
     },
   })
 
+  // Load CAPTCHA on component mount
+  const loadCaptcha = async () => {
+    setLoadingCaptcha(true)
+    try {
+      const response = await apiGenerateCaptcha()
+      if (response.data) {
+        setCaptchaData({
+          id: response.data.captchaId,
+          image: response.data.imageData,
+        })
+        form.setValue('captcha', '')
+      }
+    } catch (error) {
+      toast.error('加载验证码失败')
+    } finally {
+      setLoadingCaptcha(false)
+    }
+  }
+
+  useEffect(() => {
+    loadCaptcha()
+  }, [])
+
   const { mutate: loginUser, status } = useMutation({
-    mutationFn: (values: { auth: string; username?: string; password?: string; token?: string }) =>
+    mutationFn: (values: {
+      auth: string
+      username?: string
+      password?: string
+      token?: string
+      captchaId?: string
+      captcha?: string
+    }) =>
       login({
         auth: values.auth,
         username: values.username,
         password: values.password,
         token: values.token,
+        captchaId: values.captchaId,
+        captcha: values.captcha,
       }),
     onSuccess: async ({ data }) => {
       await queryClient.invalidateQueries()
@@ -161,13 +206,16 @@ export function LoginForm({
       navigate({ to: searchParams.redirect || '/portal', replace: true })
     },
     onError: (error) => {
+      // Reload CAPTCHA on error
+      loadCaptcha()
+      
       if (isAxiosError<IErrorResponse>(error)) {
         const errorCode = error.response?.data.code
         switch (errorCode) {
           case ERROR_INVALID_CREDENTIALS:
-            form.setError('password', {
+            form.setError('captcha', {
               type: 'manual',
-              message: '用户名或密码错误',
+              message: '用户名、密码或验证码错误',
             })
             return
           case ERROR_MUST_REGISTER:
@@ -193,6 +241,8 @@ export function LoginForm({
       loginUser({
         username: values.username,
         password: values.password,
+        captchaId: captchaData?.id,
+        captcha: values.captcha,
         auth: authMode == AuthMode.ACT ? 'act-ldap' : 'normal',
       })
     }
@@ -243,6 +293,48 @@ export function LoginForm({
                 <FormControl>
                   <Input type="password" autoComplete="current-password" {...field} />
                 </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* CAPTCHA field */}
+          <FormField
+            control={form.control}
+            name="captcha"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>验证码</FormLabel>
+                <div className="flex gap-2">
+                  <FormControl>
+                    <Input
+                      placeholder="请输入验证码"
+                      maxLength={4}
+                      autoComplete="off"
+                      {...field}
+                    />
+                  </FormControl>
+                  <div className="relative flex items-center">
+                    {loadingCaptcha ? (
+                      <div className="flex h-[40px] w-[120px] items-center justify-center rounded border bg-muted">
+                        <RefreshCw className="h-4 w-4 animate-spin" />
+                      </div>
+                    ) : captchaData ? (
+                      <button
+                        type="button"
+                        onClick={loadCaptcha}
+                        className="relative h-[40px] w-[120px] overflow-hidden rounded border"
+                        title="点击刷新验证码"
+                      >
+                        <img
+                          src={captchaData.image}
+                          alt="CAPTCHA"
+                          className="h-full w-full object-cover"
+                        />
+                      </button>
+                    ) : null}
+                  </div>
+                </div>
                 <FormMessage />
               </FormItem>
             )}

@@ -37,6 +37,8 @@ export interface ILogin {
   token?: string
   username?: string
   password?: string
+  captchaId?: string
+  captcha?: string
 }
 
 // const (

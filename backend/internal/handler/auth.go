@@ -74,6 +74,8 @@ type (
 		Username   *string    `json:"username"`                // (act-ldap, normal)
 		Password   *string    `json:"password"`                // (act-ldap, normal)
 		Token      *string    `json:"token"`                   // (act-api)
+		CaptchaID  *string    `json:"captchaId"`               // CAPTCHA ID
+		Captcha    *string    `json:"captcha"`                 // CAPTCHA answer
 	}
 
 	LoginResp struct {
@@ -263,6 +265,25 @@ func (mgr *AuthMgr) Login(c *gin.Context) {
 	if err := c.ShouldBind(&req); err != nil {
 		resputil.BadRequestError(c, err.Error())
 		return
+	}
+
+	// Verify CAPTCHA for normal and ACT-LDAP login methods
+	if req.AuthMethod == AuthMethodNormal || req.AuthMethod == AuthMethodACTLDAP {
+		if req.CaptchaID == nil || req.Captcha == nil {
+			resputil.BadRequestError(c, "CAPTCHA is required")
+			return
+		}
+		
+		captchaMgr := GetGlobalCaptchaMgr()
+		if captchaMgr == nil {
+			resputil.Error(c, "CAPTCHA service not available", resputil.NotSpecified)
+			return
+		}
+		
+		if !captchaMgr.VerifyCaptcha(*req.CaptchaID, *req.Captcha) {
+			resputil.HTTPError(c, http.StatusUnauthorized, "Invalid CAPTCHA", resputil.InvalidCredentials)
+			return
+		}
 	}
 
 	var username, password, token string
