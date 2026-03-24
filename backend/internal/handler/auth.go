@@ -273,7 +273,6 @@ func (mgr *AuthMgr) Login(c *gin.Context) {
 			resputil.BadRequestError(c, "CAPTCHA is required")
 			return
 		}
-		
 		captchaMgr := GetGlobalCaptchaMgr()
 		if captchaMgr == nil {
 			resputil.Error(c, "CAPTCHA service not available", resputil.NotSpecified)

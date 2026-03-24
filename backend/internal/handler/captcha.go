@@ -20,11 +20,11 @@ type CaptchaMgr struct {
 	name  string
 	store *CaptchaStore
 }
-
+const captchaExpireMinutes = 5 * time.Minute
 func NewCaptchaMgr(_ *RegisterConfig) Manager {
 	mgr := &CaptchaMgr{
 		name:  "captcha",
-		store: NewCaptchaStore(time.Minute * 5), // CAPTCHA expires in 5 minutes
+		store: NewCaptchaStore(captchaExpireMinutes), // CAPTCHA expires in 5 minutes
 	}
 	SetGlobalCaptchaMgr(mgr)
 	return mgr
@@ -68,7 +68,7 @@ func NewCaptchaStore(ttl time.Duration) *CaptchaStore {
 	return store
 }
 
-func (s *CaptchaStore) Set(id string, value string) error {
+func (s *CaptchaStore) Set(id, value string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	s.data[id] = &CaptchaItem{
@@ -78,10 +78,9 @@ func (s *CaptchaStore) Set(id string, value string) error {
 	return nil
 }
 
-func (s *CaptchaStore) Get(id string, clear bool) string {
+func (s *CaptchaStore) Get(id string, myclear bool) string {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	
 	item, exists := s.data[id]
 	if !exists {
 		return ""
@@ -102,7 +101,7 @@ func (s *CaptchaStore) Get(id string, clear bool) string {
 }
 
 func (s *CaptchaStore) Verify(id, answer string, clear bool) bool {
-	value := s.Get(id, clear)
+	value := s.Get(id, myclear)
 	return value != "" && value == answer
 }
 
