@@ -93,14 +93,14 @@ func (s *CaptchaStore) Get(id string, myclear bool) string {
 	}
 	
 	value := item.value
-	if clear {
+	if myclear {
 		delete(s.data, id)
 	}
 	
 	return value
 }
 
-func (s *CaptchaStore) Verify(id, answer string, clear bool) bool {
+func (s *CaptchaStore) Verify(id, answer string, myclear bool) bool {
 	value := s.Get(id, myclear)
 	return value != "" && value == answer
 }
