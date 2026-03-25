@@ -87,7 +87,6 @@ func (s *CaptchaStore) Get(id string, myclear bool) string {
 	if !exists {
 		return ""
 	}
-	
 	// Check if expired
 	if time.Now().After(item.expiresAt) {
 		delete(s.data, id)
