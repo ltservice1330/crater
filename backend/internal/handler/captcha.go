@@ -107,7 +107,6 @@ func (s *CaptchaStore) Verify(id, answer string, myclear bool) bool {
 func (s *CaptchaStore) cleanup() {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	
 	now := time.Now()
 	for id, item := range s.data {
 		if now.After(item.expiresAt) {
