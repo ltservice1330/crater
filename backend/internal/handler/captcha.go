@@ -92,12 +92,10 @@ func (s *CaptchaStore) Get(id string, myclear bool) string {
 		delete(s.data, id)
 		return ""
 	}
-	
 	value := item.value
 	if myclear {
 		delete(s.data, id)
 	}
-	
 	return value
 }
 
@@ -150,7 +148,6 @@ func (mgr *CaptchaMgr) GenerateCaptcha(c *gin.Context) {
 		},
 		Fonts: []string{"wqy-microhei.ttc"},
 	}
-
 	// Create captcha
 	captcha := base64Captcha.NewCaptcha(driver, mgr.store)
 	id, b64s, _, err := captcha.Generate()
@@ -158,7 +155,6 @@ func (mgr *CaptchaMgr) GenerateCaptcha(c *gin.Context) {
 		resputil.Error(c, "Failed to generate captcha", resputil.NotSpecified)
 		return
 	}
-
 	resp := GenerateCaptchaResp{
 		CaptchaID: id,
 		ImageData: b64s,
