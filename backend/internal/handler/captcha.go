@@ -20,7 +20,9 @@ type CaptchaMgr struct {
 	name  string
 	store *CaptchaStore
 }
+
 const captchaExpireMinutes = 5 * time.Minute
+
 func NewCaptchaMgr(_ *RegisterConfig) Manager {
 	mgr := &CaptchaMgr{
 		name:  "captcha",

@@ -278,7 +278,6 @@ func (mgr *AuthMgr) Login(c *gin.Context) {
 			resputil.Error(c, "CAPTCHA service not available", resputil.NotSpecified)
 			return
 		}
-		
 		if !captchaMgr.VerifyCaptcha(*req.CaptchaID, *req.Captcha) {
 			resputil.HTTPError(c, http.StatusUnauthorized, "Invalid CAPTCHA", resputil.InvalidCredentials)
 			return
