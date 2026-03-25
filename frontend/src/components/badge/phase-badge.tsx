@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 import { Badge } from '@/components/ui/badge'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+
+//import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
 import { cn } from '@/lib/utils'
 
@@ -50,17 +51,27 @@ export const PhaseBadge = <T,>({
   }
 
   return (
-    <TooltipProvider delayDuration={100}>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Badge className={cn('cursor-help border-none', data.color)} variant="outline">
-            <div>{data.label}</div>
-          </Badge>
-        </TooltipTrigger>
-        <TooltipContent>
-          <p>{data.description}</p>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+    <Badge
+      className={cn('flex cursor-help items-center gap-1 border-none px-2 py-0.5', data.color)}
+      variant="outline"
+    >
+      {data.label}
+    </Badge>
   )
+  //}
+
+  // return (
+  //   <TooltipProvider delayDuration={100}>
+  //     <Tooltip>
+  //       <TooltipTrigger asChild>
+  //         <Badge className={cn('cursor-help border-none', data.color)} variant="outline">
+  //           <div>{data.label}</div>
+  //         </Badge>
+  //       </TooltipTrigger>
+  //       <TooltipContent>
+  //         <p>{data.description}</p>
+  //       </TooltipContent>
+  //     </Tooltip>
+  //   </TooltipProvider>
+  // )
 }
