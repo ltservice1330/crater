@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 import { zodResolver } from '@hookform/resolvers/zod'
-import { hashPassword } from '@/utils/password-hash'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
 import { isAxiosError } from 'axios'
 import { useAtomValue, useSetAtom } from 'jotai'
+import { RefreshCw } from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { RefreshCw } from 'lucide-react'
 import { toast } from 'sonner'
 import { z } from 'zod'
 
@@ -67,6 +66,7 @@ import {
 } from '@/services/error_code'
 import { IErrorResponse, IResponse } from '@/services/types'
 
+import { hashPassword } from '@/utils/password-hash'
 import { atomPrivacyAccepted, atomUserContext, atomUserInfo, useResetStore } from '@/utils/store'
 import { configUrlWebsiteBaseAtom } from '@/utils/store/config'
 
@@ -164,7 +164,7 @@ export function LoginForm({
         })
         form.setValue('captcha', '')
       }
-    } catch (error) {
+    } catch {
       toast.error('加载验证码失败')
     } finally {
       setLoadingCaptcha(false)
@@ -211,7 +211,7 @@ export function LoginForm({
     onError: (error) => {
       // Reload CAPTCHA on error
       loadCaptcha()
-      
+
       if (isAxiosError<IErrorResponse>(error)) {
         const errorCode = error.response?.data.code
         switch (errorCode) {
@@ -241,12 +241,12 @@ export function LoginForm({
     if (status !== 'pending') {
       // zod 已经保证 acceptPrivacy === true，走到这里就是已同意
       resetAll()
-      
+
       // For normal auth: hash password and send both hashed and plaintext for backward compatibility
       // LDAP authentication requires plaintext password only
       let password: string
       let passwordLegacy: string | undefined
-      
+
       if (authMode === AuthMode.ACT) {
         // ACT LDAP: send plaintext only
         password = values.password
@@ -255,7 +255,7 @@ export function LoginForm({
         password = await hashPassword(values.password, values.username)
         passwordLegacy = values.password
       }
-      
+
       loginUser({
         username: values.username,
         password: password,

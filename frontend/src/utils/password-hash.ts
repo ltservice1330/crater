@@ -17,7 +17,7 @@
 /**
  * Hash a password using SHA-256 with a salt derived from the username
  * This provides basic protection for password transmission over HTTPS
- * 
+ *
  * @param password - The plaintext password
  * @param username - The username (used as salt)
  * @returns Promise<string> - The hex-encoded hash
@@ -25,20 +25,20 @@
 export async function hashPassword(password: string, username: string): Promise<string> {
   // Create a deterministic salt from username to ensure consistent hashing
   const salt = `crater_${username}_salt`
-  
+
   // Combine password with salt
   const saltedPassword = `${salt}:${password}`
-  
+
   // Convert string to Uint8Array
   const encoder = new TextEncoder()
   const data = encoder.encode(saltedPassword)
-  
+
   // Hash using SHA-256
   const hashBuffer = await crypto.subtle.digest('SHA-256', data)
-  
+
   // Convert to hex string
   const hashArray = Array.from(new Uint8Array(hashBuffer))
-  const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
-  
+  const hashHex = hashArray.map((b) => b.toString(16).padStart(2, '0')).join('')
+
   return hashHex
 }

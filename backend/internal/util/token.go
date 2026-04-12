@@ -13,6 +13,10 @@ import (
 	jwt "github.com/golang-jwt/jwt/v5"
 )
 
+const (
+	PredefinedMinutes = 10
+)
+
 type (
 	JWTClaims struct {
 		UserID           uint             `json:"ui"`
@@ -57,7 +61,7 @@ func GetTokenMgr() *TokenManager {
 			tokenConfig.RefreshTokenExpiryHour,
 		)
 		go func() {
-			ticker := time.NewTicker(time.Minute * 10)
+			ticker := time.NewTicker(time.Minute * PredefinedMinutes)
 			defer ticker.Stop()
 			for range ticker.C {
 				tokenMgr.cleanupBlacklist()

@@ -6,7 +6,14 @@ import { toast } from 'sonner'
 
 import Loading from '@/components/placeholder/loading-spinner'
 
-import { IAuthResponse, ILogin, IUserContext, apiCheckToken, apiLogin, apiLogout } from '@/services/api/auth'
+import {
+  IAuthResponse,
+  ILogin,
+  IUserContext,
+  apiCheckToken,
+  apiLogin,
+  apiLogout,
+} from '@/services/api/auth'
 import { IResponse } from '@/services/types'
 
 import { logger } from '@/utils/loglevel'

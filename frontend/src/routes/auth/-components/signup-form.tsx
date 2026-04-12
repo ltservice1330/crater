@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import { zodResolver } from '@hookform/resolvers/zod'
-import { hashPassword } from '@/utils/password-hash'
 import { useMutation } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
 import { isAxiosError } from 'axios'
@@ -40,6 +39,8 @@ import { apiSignup } from '@/services/api/auth'
 import { apiSendVerificationCode } from '@/services/api/verification'
 import { ERROR_REGISTER_NOT_FOUND, ERROR_REGISTER_TIMEOUT } from '@/services/error_code'
 import { IErrorResponse } from '@/services/types'
+
+import { hashPassword } from '@/utils/password-hash'
 
 const formSchema = z
   .object({
@@ -110,7 +111,7 @@ export function SignupForm() {
     mutationFn: async (values: z.infer<typeof formSchema>) => {
       // Hash password before sending to backend
       const hashedPassword = await hashPassword(values.password, values.username)
-      
+
       return apiSignup({
         userName: values.username,
         password: hashedPassword,
@@ -154,7 +155,7 @@ export function SignupForm() {
 
   const handleSendVerificationCode = async () => {
     const contact = form.getValues('contact')
-    
+
     // Validate contact field before sending
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     const phoneRegex = /^1[3-9]\d{9}$/
@@ -173,7 +174,7 @@ export function SignupForm() {
         setVerificationId(response.data.verificationId)
         setCountdown(60)
         toast.success('验证码已发送')
-        
+
         // Start countdown
         const timer = setInterval(() => {
           setCountdown((prev) => {
@@ -219,14 +220,12 @@ export function SignupForm() {
               <FormControl>
                 <Input placeholder="请输入邮箱或手机号" autoComplete="off" {...field} />
               </FormControl>
-              <FormDescription className="text-xs">
-                用于接收验证码和账号通知
-              </FormDescription>
+              <FormDescription className="text-xs">用于接收验证码和账号通知</FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
-        
+
         <FormField
           control={form.control}
           name="verificationCode"
@@ -268,14 +267,12 @@ export function SignupForm() {
               <FormControl>
                 <Input placeholder="请输入用户名" autoComplete="off" {...field} />
               </FormControl>
-              <FormDescription className="text-xs">
-                仅支持小写字母、数字和中划线
-              </FormDescription>
+              <FormDescription className="text-xs">仅支持小写字母、数字和中划线</FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
-        
+
         <FormField
           control={form.control}
           name="password"
@@ -289,7 +286,7 @@ export function SignupForm() {
             </FormItem>
           )}
         />
-        
+
         <FormField
           control={form.control}
           name="passwordConfirm"
@@ -303,7 +300,7 @@ export function SignupForm() {
             </FormItem>
           )}
         />
-        
+
         <LoadableButton
           isLoadingText="注册中"
           type="submit"

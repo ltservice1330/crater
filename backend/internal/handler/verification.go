@@ -27,6 +27,8 @@ const (
 	maxFetch5Min           = 5
 	maxFetchDaily          = 20
 	maxVerifyAttempts      = 5
+	bytelength             = 16
+	maxBigInt              = 900000
 )
 
 type VerificationMgr struct {
@@ -145,10 +147,8 @@ func (s *VerificationStore) Set(id, code, contact string) error {
 		expiresAt: time.Now().Add(s.ttl),
 		attempts:  0,
 	}
-
 	// Record history
 	s.history[contact] = append(s.history[contact], time.Now())
-	
 	return nil
 }
 
@@ -233,7 +233,7 @@ type VerifyCodeResp struct {
 // generateVerificationCode generates a random 6-digit verification code
 func generateVerificationCode() (string, error) {
 	// Generate a random number between 100000 and 999999
-	maxVal := big.NewInt(900000)
+	maxVal := big.NewInt(maxBigInt)
 	n, err := rand.Int(rand.Reader, maxVal)
 	if err != nil {
 		return "", err
@@ -244,7 +244,7 @@ func generateVerificationCode() (string, error) {
 
 // generateVerificationID generates a unique ID for the verification session
 func generateVerificationID() (string, error) {
-	b := make([]byte, 16)
+	b := make([]byte, bytelength)
 	_, err := rand.Read(b)
 	if err != nil {
 		return "", err
@@ -350,12 +350,11 @@ func (mgr *VerificationMgr) doSendSMS(token, apiUrl, phone, code, busiCode strin
 	// Send verification sms using the provided specification
 	sendUrl := fmt.Sprintf("%s/smsapi/sms/send", apiUrl)
 	var result map[string]interface{}
-
 	body := map[string]interface{}{
-		"busiCode":     busiCode,
-		"phone":        phone,
-		"sendDelay":    "false",
-		"sendType":     "1",
+		"busiCode":  busiCode,
+		"phone":     phone,
+		"sendDelay": "false",
+		"sendType":  "1",
 		"values": map[string]string{
 			"code": code,
 		},
