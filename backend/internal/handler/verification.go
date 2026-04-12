@@ -21,6 +21,14 @@ func init() {
 	Registers = append(Registers, NewVerificationMgr)
 }
 
+const (
+	verificationTTLMinutes = 10
+	maxFetch1Min           = 1
+	maxFetch5Min           = 5
+	maxFetchDaily          = 20
+	maxVerifyAttempts      = 5
+)
+
 type VerificationMgr struct {
 	name     string
 	store    *VerificationStore
@@ -32,7 +40,7 @@ type VerificationMgr struct {
 func NewVerificationMgr(_ *RegisterConfig) Manager {
 	mgr := &VerificationMgr{
 		name:  "verification",
-		store: NewVerificationStore(time.Minute * 10), // Verification code expires in 10 minutes
+		store: NewVerificationStore(time.Minute * verificationTTLMinutes),
 		req:   imrocreq.C(),
 	}
 	SetGlobalVerificationMgr(mgr)
@@ -107,13 +115,13 @@ func (s *VerificationStore) CheckRateLimit(contact string) error {
 		}
 	}
 
-	if in1Min >= 1 {
+	if in1Min >= maxFetch1Min {
 		return fmt.Errorf("please wait 1 minute before requesting again")
 	}
-	if in5Min >= 5 {
+	if in5Min >= maxFetch5Min {
 		return fmt.Errorf("too many requests, please wait 5 minutes")
 	}
-	if in24Hour >= 20 {
+	if in24Hour >= maxFetchDaily {
 		return fmt.Errorf("daily limit exceeded")
 	}
 
@@ -123,7 +131,7 @@ func (s *VerificationStore) CheckRateLimit(contact string) error {
 func (s *VerificationStore) Set(id, code, contact string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	
+
 	// Invalidate previous codes for this contact
 	for existingID, item := range s.data {
 		if item.contact == contact {
@@ -162,8 +170,7 @@ func (s *VerificationStore) Verify(id, code string) bool {
 	// Increment attempts
 	item.attempts++
 
-	// Max 5 attempts
-	if item.attempts > 5 {
+	if item.attempts > maxVerifyAttempts {
 		delete(s.data, id)
 		return false
 	}
@@ -226,8 +233,8 @@ type VerifyCodeResp struct {
 // generateVerificationCode generates a random 6-digit verification code
 func generateVerificationCode() (string, error) {
 	// Generate a random number between 100000 and 999999
-	max := big.NewInt(900000)
-	n, err := rand.Int(rand.Reader, max)
+	maxVal := big.NewInt(900000)
+	n, err := rand.Int(rand.Reader, maxVal)
 	if err != nil {
 		return "", err
 	}
@@ -343,7 +350,7 @@ func (mgr *VerificationMgr) doSendSMS(token, apiUrl, phone, code, busiCode strin
 	// Send verification sms using the provided specification
 	sendUrl := fmt.Sprintf("%s/smsapi/sms/send", apiUrl)
 	var result map[string]interface{}
-	
+
 	body := map[string]interface{}{
 		"busiCode":     busiCode,
 		"phone":        phone,

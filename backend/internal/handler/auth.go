@@ -128,6 +128,8 @@ func GetVersionInfo() VersionInfo {
 	return globalVersionInfo
 }
 
+const maxLogoutTokenExpiryHours = 24 * 7
+
 type AuthMode string
 
 const (
@@ -182,45 +184,54 @@ func (mgr *AuthMgr) Check(c *gin.Context) {
 		resputil.Success(c, nil)
 		return
 	}
+
 	token := parts[1]
+
 	// 验证token
 	jwtMessage, err := mgr.tokenMgr.CheckToken(token)
 	if err != nil {
 		resputil.HTTPError(c, http.StatusUnauthorized, err.Error(), resputil.TokenExpired)
 		return
 	}
+
 	// 从数据库获取用户信息
 	u := query.User
 	q := query.Account
 	uq := query.UserAccount
+
 	user, err := u.WithContext(c).Where(u.ID.Eq(jwtMessage.UserID)).First()
 	if err != nil {
 		resputil.Success(c, nil)
 		return
 	}
+
 	// 检查用户状态
 	if user.Status != model.StatusActive {
 		resputil.Success(c, nil)
 		return
 	}
+
 	// 获取当前队列信息
 	currentQueue, err := q.WithContext(c).Where(q.ID.Eq(jwtMessage.AccountID)).First()
 	if err != nil {
 		resputil.Success(c, nil)
 		return
 	}
+
 	// 获取用户队列信息
 	userQueue, err := uq.WithContext(c).Where(uq.UserID.Eq(user.ID), uq.AccountID.Eq(jwtMessage.AccountID)).First()
 	if err != nil {
 		resputil.Success(c, nil)
 		return
 	}
+
 	// 获取公共访问权限
 	publicAccessMode := model.AccessModeNA
 	defaultUserQueue, err := uq.WithContext(c).Where(uq.UserID.Eq(user.ID), uq.AccountID.Eq(model.DefaultAccountID)).First()
 	if err == nil {
 		publicAccessMode = defaultUserQueue.AccessMode
 	}
+
 	// 构造响应
 	checkResponse := CheckResp{
 		Context: AccountContext{
@@ -234,6 +245,7 @@ func (mgr *AuthMgr) Check(c *gin.Context) {
 		User:    user.Attributes.Data(),
 		Version: GetVersionInfo(),
 	}
+
 	resputil.Success(c, checkResponse)
 }
 
@@ -265,13 +277,13 @@ func (mgr *AuthMgr) Login(c *gin.Context) {
 			resputil.BadRequestError(c, "CAPTCHA is required")
 			return
 		}
-		
+
 		captchaMgr := GetGlobalCaptchaMgr()
 		if captchaMgr == nil {
 			resputil.Error(c, "CAPTCHA service not available", resputil.NotSpecified)
 			return
 		}
-		
+
 		if !captchaMgr.VerifyCaptcha(*req.CaptchaID, *req.Captcha) {
 			resputil.HTTPError(c, http.StatusUnauthorized, "Invalid CAPTCHA", resputil.InvalidCredentials)
 			return
@@ -306,6 +318,7 @@ func (mgr *AuthMgr) Login(c *gin.Context) {
 		resputil.BadRequestError(c, "Invalid auth method")
 		return
 	}
+
 	// Check if request auth method is valid
 	var attributes model.UserAttribute
 	allowRegister := false
@@ -331,6 +344,7 @@ func (mgr *AuthMgr) Login(c *gin.Context) {
 		resputil.BadRequestError(c, "Invalid auth method")
 		return
 	}
+
 	// Check if the user exists, and should create user or return error
 	user, err := mgr.getOrCreateUser(c, &req, &attributes, allowRegister)
 	if err != nil {
@@ -348,6 +362,7 @@ func (mgr *AuthMgr) Login(c *gin.Context) {
 			return
 		}
 	}
+
 	if err = updateUserIfNeeded(c, user, &attributes); err != nil {
 		resputil.Error(c, "Create or update user failed", resputil.NotSpecified)
 		return
@@ -360,21 +375,25 @@ func (mgr *AuthMgr) Login(c *gin.Context) {
 
 	q := query.Account
 	uq := query.UserAccount
+
 	lastUserQueue, err := uq.WithContext(c).Where(uq.UserID.Eq(user.ID)).Last()
 	if err != nil {
 		resputil.Error(c, "User must has at least one queue", resputil.UserNotAllowed)
 		return
 	}
+
 	lastQueue, err := q.WithContext(c).Where(q.ID.Eq(lastUserQueue.AccountID)).First()
 	if err != nil {
 		resputil.Error(c, "User must has at least one queue", resputil.UserNotAllowed)
 		return
 	}
+
 	publicAccessMode := model.AccessModeNA
 	defaultUserQueue, err := uq.WithContext(c).Where(uq.UserID.Eq(user.ID), uq.AccountID.Eq(model.DefaultAccountID)).First()
 	if err == nil {
 		publicAccessMode = defaultUserQueue.AccessMode
 	}
+
 	// Generate JWT tokens
 	jwtMessage := util.JWTMessage{
 		UserID:            user.ID,
@@ -426,19 +445,23 @@ func (mgr *AuthMgr) getOrCreateUser(
 	if attr.Nickname == "" && req.Username != nil {
 		attr.Nickname = *req.Username
 	}
+
 	u := query.User
 	user, err := u.WithContext(c).Where(u.Name.Eq(attr.Name)).First()
 	if err == nil {
 		return user, nil
 	}
+
 	if !errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, err
 	}
+
 	// User not found in the database
 	if allowCreate {
 		// User exists in the auth method but not in the database, create a new user
 		return mgr.createUser(c, attr.Name, nil)
 	}
+
 	return nil, ErrorMustRegister
 }
 
@@ -670,7 +693,7 @@ func (mgr *AuthMgr) actAPIAuth(_ context.Context, token string, attr *model.User
 
 func (mgr *AuthMgr) actLDAPAuth(_ context.Context, username, password string) error {
 	authConfig := config.GetConfig()
-	
+
 	// ACT 管理员认证
 	// Note: LDAP authentication requires plaintext password
 	// The frontend sends plaintext for ACT LDAP auth mode
@@ -724,6 +747,34 @@ type (
 	}
 )
 
+func (mgr *AuthMgr) verifySignupCode(verificationID, code string) error {
+	verificationMgr := GetGlobalVerificationMgr()
+	if verificationMgr == nil {
+		return fmt.Errorf("verification service not available")
+	}
+
+	if !verificationMgr.VerifyCodeInternal(verificationID, code) {
+		return fmt.Errorf("invalid or expired verification code")
+	}
+	return nil
+}
+
+func (mgr *AuthMgr) checkDuplicateContact(c context.Context, contact string) error {
+	u := query.User
+	allUsers, err := u.WithContext(c).Find()
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		return fmt.Errorf("failed to check duplicate contact")
+	}
+
+	for _, existingUser := range allUsers {
+		userAttr := existingUser.Attributes.Data()
+		if userAttr.Email != nil && *userAttr.Email == contact {
+			return fmt.Errorf("this email or phone number is already registered")
+		}
+	}
+	return nil
+}
+
 func (mgr *AuthMgr) Signup(c *gin.Context) {
 	var req SignupReq
 	if err := c.ShouldBind(&req); err != nil {
@@ -737,14 +788,8 @@ func (mgr *AuthMgr) Signup(c *gin.Context) {
 	}
 
 	// Verify the verification code
-	verificationMgr := GetGlobalVerificationMgr()
-	if verificationMgr == nil {
-		resputil.Error(c, "Verification service not available", resputil.NotSpecified)
-		return
-	}
-
-	if !verificationMgr.VerifyCodeInternal(req.VerificationID, req.Code) {
-		resputil.Error(c, "Invalid or expired verification code", resputil.InvalidRequest)
+	if err := mgr.verifySignupCode(req.VerificationID, req.Code); err != nil {
+		resputil.Error(c, err.Error(), resputil.InvalidRequest)
 		return
 	}
 
@@ -763,19 +808,9 @@ func (mgr *AuthMgr) Signup(c *gin.Context) {
 	}
 
 	// Check if email/phone is already registered
-	// Query all users and check their attributes for matching contact
-	allUsers, err := u.WithContext(c).Find()
-	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
-		resputil.Error(c, "Failed to check duplicate contact", resputil.NotSpecified)
+	if err := mgr.checkDuplicateContact(c, req.Contact); err != nil {
+		resputil.Error(c, err.Error(), resputil.InvalidRequest)
 		return
-	}
-
-	for _, existingUser := range allUsers {
-		userAttr := existingUser.Attributes.Data()
-		if userAttr.Email != nil && *userAttr.Email == req.Contact {
-			resputil.Error(c, "This email or phone number is already registered", resputil.InvalidRequest)
-			return
-		}
 	}
 
 	user, err := mgr.createUser(c, req.Username, &req.Password)
@@ -864,7 +899,7 @@ func (mgr *AuthMgr) Logout(c *gin.Context) {
 		token := parts[1]
 		// Add token to blacklist with 7 days expiry (max token validity)
 		// Or ideally parsed from token, but 7 days is safe
-		mgr.tokenMgr.BlockToken(token, time.Now().Add(time.Hour*24*7))
+		mgr.tokenMgr.BlockToken(token, time.Now().Add(time.Hour*maxLogoutTokenExpiryHours))
 	}
 	resputil.Success(c, "Logged out successfully")
 }

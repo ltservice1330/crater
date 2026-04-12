@@ -125,7 +125,7 @@ export function SignupForm() {
     },
     onError: (error) => {
       if (isAxiosError<IErrorResponse>(error)) {
-        const errorCode = error.response?.data.code
+        const errorCode = error.response?.data?.code
         switch (errorCode) {
           case ERROR_REGISTER_TIMEOUT:
             toast.error('新用户注册访问 UID Server 超时，请联系管理员')
@@ -134,7 +134,7 @@ export function SignupForm() {
             toast.error('新用户注册访问 UID Server 失败，请联系管理员')
             return
         }
-        toast.error(error.response?.data.message || '注册失败，请稍后重试')
+        toast.error(error.response?.data?.msg || '注册失败，请稍后重试')
       } else {
         toast.error('注册失败，请稍后重试')
       }
@@ -187,7 +187,7 @@ export function SignupForm() {
       }
     } catch (error) {
       if (isAxiosError<IErrorResponse>(error)) {
-        toast.error(error.response?.data.message || '发送验证码失败')
+        toast.error(error.response?.data?.msg || '发送验证码失败')
       } else {
         toast.error('发送验证码失败，请稍后重试')
       }
