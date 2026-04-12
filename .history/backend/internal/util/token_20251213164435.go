@@ -41,7 +41,6 @@ type TokenManager struct {
 	secretKey       string
 	accessTokenTTL  int
 	refreshTokenTTL int
-	blackList       sync.Map
 }
 
 var (
@@ -56,41 +55,16 @@ func GetTokenMgr() *TokenManager {
 			tokenConfig.AccessTokenExpiryHour,
 			tokenConfig.RefreshTokenExpiryHour,
 		)
-		go func() {
-			ticker := time.NewTicker(time.Minute * 10)
-			defer ticker.Stop()
-			for range ticker.C {
-				tokenMgr.cleanupBlacklist()
-			}
-		}()
 	})
 	return tokenMgr
 }
 
 func newTokenManager(secretKey string, accessTokenTTL, refreshTokenTTL int) *TokenManager {
 	return &TokenManager{
-		secretKey:       secretKey,
-		accessTokenTTL:  accessTokenTTL,
-		refreshTokenTTL: refreshTokenTTL,
-		blackList:       sync.Map{},
+		secretKey,
+		accessTokenTTL,
+		refreshTokenTTL,
 	}
-}
-
-// BlockToken adds the given token to the blacklist with an expiry time.
-func (tm *TokenManager) BlockToken(token string, expiry time.Time) {
-	tm.blackList.Store(token, expiry)
-}
-
-// cleanupBlacklist periodically removes expired tokens from the blacklist.
-func (tm *TokenManager) cleanupBlacklist() {
-	now := time.Now()
-	tm.blackList.Range(func(key, value any) bool {
-		expiry, ok := value.(time.Time)
-		if ok && now.After(expiry) {
-			tm.blackList.Delete(key)
-		}
-		return true
-	})
 }
 
 func (tm *TokenManager) createToken(msg *JWTMessage, ttl int) (string, error) {
@@ -131,11 +105,6 @@ func (tm *TokenManager) CreateTokens(msg *JWTMessage) (
 }
 
 func (tm *TokenManager) CheckToken(requestToken string) (JWTMessage, error) {
-	// First check if token is blacklisted
-	if _, ok := tm.blackList.Load(requestToken); ok {
-		return JWTMessage{}, jwt.ErrTokenSignatureInvalid
-	}
-
 	claims := JWTClaims{}
 	_, err := jwt.ParseWithClaims(requestToken, &claims, func(_ *jwt.Token) (any, error) {
 		return []byte(tm.secretKey), nil

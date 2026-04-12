@@ -6,7 +6,7 @@ import { toast } from 'sonner'
 
 import Loading from '@/components/placeholder/loading-spinner'
 
-import { IAuthResponse, ILogin, IUserContext, apiCheckToken, apiLogin, apiLogout } from '@/services/api/auth'
+import { IAuthResponse, ILogin, IUserContext, apiCheckToken, apiLogin } from '@/services/api/auth'
 import { IResponse } from '@/services/types'
 
 import { logger } from '@/utils/loglevel'
@@ -92,12 +92,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     })
   }
 
-  const logout = async () => {
-    try {
-      await apiLogout()
-    } catch (e) {
-      logger.error('Failed to logout on server:', e)
-    }
+  const logout = () => {
     setIsAuthenticated(false)
     setLastView('portal')
     localStorage.removeItem(ACCESS_TOKEN_KEY)

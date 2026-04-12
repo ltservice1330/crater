@@ -326,11 +326,16 @@ export function LoginForm({
                 <FormLabel>验证码</FormLabel>
                 <div className="flex gap-2">
                   <FormControl>
-                    <Input placeholder="请输入验证码" maxLength={4} autoComplete="off" {...field} />
+                    <Input
+                      placeholder="请输入验证码"
+                      maxLength={4}
+                      autoComplete="off"
+                      {...field}
+                    />
                   </FormControl>
                   <div className="relative flex items-center">
                     {loadingCaptcha ? (
-                      <div className="bg-muted flex h-[40px] w-[120px] items-center justify-center rounded border">
+                      <div className="flex h-[40px] w-[120px] items-center justify-center rounded border bg-muted">
                         <RefreshCw className="h-4 w-4 animate-spin" />
                       </div>
                     ) : captchaData ? (

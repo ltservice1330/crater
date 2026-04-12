@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 import { zodResolver } from '@hookform/resolvers/zod'
-import { hashPassword } from '@/utils/password-hash'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
 import { isAxiosError } from 'axios'
 import { useAtomValue, useSetAtom } from 'jotai'
-import { useCallback, useEffect, useState } from 'react'
-import { useForm } from 'react-hook-form'
 import { RefreshCw } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
 
@@ -153,7 +152,7 @@ export function LoginForm({
   })
 
   // Load CAPTCHA on component mount
-  const loadCaptcha = useCallback(async () => {
+  const loadCaptcha = async () => {
     setLoadingCaptcha(true)
     try {
       const response = await apiGenerateCaptcha()
@@ -164,23 +163,22 @@ export function LoginForm({
         })
         form.setValue('captcha', '')
       }
-    } catch (error) {
+    } catch {
       toast.error('加载验证码失败')
     } finally {
       setLoadingCaptcha(false)
     }
-  }, [form])
+  }
 
   useEffect(() => {
     loadCaptcha()
-  }, [loadCaptcha])
+  }, [])
 
   const { mutate: loginUser, status } = useMutation({
     mutationFn: (values: {
       auth: string
       username?: string
       password?: string
-      passwordLegacy?: string
       token?: string
       captchaId?: string
       captcha?: string
@@ -189,13 +187,12 @@ export function LoginForm({
         auth: values.auth,
         username: values.username,
         password: values.password,
-        passwordLegacy: values.passwordLegacy,
         token: values.token,
         captchaId: values.captchaId,
         captcha: values.captcha,
       }),
     onSuccess: async ({ data }) => {
-      queryClient.clear()
+      await queryClient.invalidateQueries()
       setUserState({
         ...data.user,
         space: data.context.space,
@@ -211,7 +208,7 @@ export function LoginForm({
     onError: (error) => {
       // Reload CAPTCHA on error
       loadCaptcha()
-      
+
       if (isAxiosError<IErrorResponse>(error)) {
         const errorCode = error.response?.data.code
         switch (errorCode) {
@@ -237,29 +234,13 @@ export function LoginForm({
     },
   })
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  const onSubmit = (values: z.infer<typeof formSchema>) => {
     if (status !== 'pending') {
       // zod 已经保证 acceptPrivacy === true，走到这里就是已同意
       resetAll()
-      
-      // For normal auth: hash password and send both hashed and plaintext for backward compatibility
-      // LDAP authentication requires plaintext password only
-      let password: string
-      let passwordLegacy: string | undefined
-      
-      if (authMode === AuthMode.ACT) {
-        // ACT LDAP: send plaintext only
-        password = values.password
-      } else {
-        // Normal auth: send hashed password + plaintext for migration
-        password = await hashPassword(values.password, values.username)
-        passwordLegacy = values.password
-      }
-      
       loginUser({
         username: values.username,
-        password: password,
-        passwordLegacy: passwordLegacy,
+        password: values.password,
         captchaId: captchaData?.id,
         captcha: values.captcha,
         auth: authMode == AuthMode.ACT ? 'act-ldap' : 'normal',

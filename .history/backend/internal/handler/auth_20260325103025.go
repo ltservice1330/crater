@@ -5,7 +5,6 @@ import (
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/base64"
-	"encoding/hex"
 	"errors"
 	"fmt"
 	"net/http"
@@ -65,20 +64,18 @@ func (mgr *AuthMgr) RegisterPublic(g *gin.RouterGroup) {
 
 func (mgr *AuthMgr) RegisterProtected(g *gin.RouterGroup) {
 	g.POST("switch", mgr.SwitchQueue) // 切换项目 /switch
-	g.POST("logout", mgr.Logout)
 }
 
 func (mgr *AuthMgr) RegisterAdmin(_ *gin.RouterGroup) {}
 
 type (
 	LoginReq struct {
-		AuthMethod      AuthMethod `json:"auth" binding:"required"` // [normal, act-ldap, act-api]
-		Username        *string    `json:"username"`                // (act-ldap, normal)
-		Password        *string    `json:"password"`                // (act-ldap, normal) - hashed for normal auth
-		PasswordLegacy  *string    `json:"passwordLegacy"`          // plaintext password for backward compatibility
-		Token           *string    `json:"token"`                   // (act-api)
-		CaptchaID       *string    `json:"captchaId"`               // CAPTCHA ID
-		Captcha         *string    `json:"captcha"`                 // CAPTCHA answer
+		AuthMethod AuthMethod `json:"auth" binding:"required"` // [normal, act-ldap, act-api]
+		Username   *string    `json:"username"`                // (act-ldap, normal)
+		Password   *string    `json:"password"`                // (act-ldap, normal)
+		Token      *string    `json:"token"`                   // (act-api)
+		CaptchaID  *string    `json:"captchaId"`               // CAPTCHA ID
+		Captcha    *string    `json:"captcha"`                 // CAPTCHA answer
 	}
 
 	LoginResp struct {
@@ -183,54 +180,45 @@ func (mgr *AuthMgr) Check(c *gin.Context) {
 		resputil.Success(c, nil)
 		return
 	}
-
 	token := parts[1]
-
 	// 验证token
 	jwtMessage, err := mgr.tokenMgr.CheckToken(token)
 	if err != nil {
 		resputil.HTTPError(c, http.StatusUnauthorized, err.Error(), resputil.TokenExpired)
 		return
 	}
-
 	// 从数据库获取用户信息
 	u := query.User
 	q := query.Account
 	uq := query.UserAccount
-
 	user, err := u.WithContext(c).Where(u.ID.Eq(jwtMessage.UserID)).First()
 	if err != nil {
 		resputil.Success(c, nil)
 		return
 	}
-
 	// 检查用户状态
 	if user.Status != model.StatusActive {
 		resputil.Success(c, nil)
 		return
 	}
-
 	// 获取当前队列信息
 	currentQueue, err := q.WithContext(c).Where(q.ID.Eq(jwtMessage.AccountID)).First()
 	if err != nil {
 		resputil.Success(c, nil)
 		return
 	}
-
 	// 获取用户队列信息
 	userQueue, err := uq.WithContext(c).Where(uq.UserID.Eq(user.ID), uq.AccountID.Eq(jwtMessage.AccountID)).First()
 	if err != nil {
 		resputil.Success(c, nil)
 		return
 	}
-
 	// 获取公共访问权限
 	publicAccessMode := model.AccessModeNA
 	defaultUserQueue, err := uq.WithContext(c).Where(uq.UserID.Eq(user.ID), uq.AccountID.Eq(model.DefaultAccountID)).First()
 	if err == nil {
 		publicAccessMode = defaultUserQueue.AccessMode
 	}
-
 	// 构造响应
 	checkResponse := CheckResp{
 		Context: AccountContext{
@@ -244,7 +232,6 @@ func (mgr *AuthMgr) Check(c *gin.Context) {
 		User:    user.Attributes.Data(),
 		Version: GetVersionInfo(),
 	}
-
 	resputil.Success(c, checkResponse)
 }
 
@@ -269,27 +256,23 @@ func (mgr *AuthMgr) Login(c *gin.Context) {
 		resputil.BadRequestError(c, err.Error())
 		return
 	}
-
 	// Verify CAPTCHA for normal and ACT-LDAP login methods
 	if req.AuthMethod == AuthMethodNormal || req.AuthMethod == AuthMethodACTLDAP {
 		if req.CaptchaID == nil || req.Captcha == nil {
 			resputil.BadRequestError(c, "CAPTCHA is required")
 			return
 		}
-		
 		captchaMgr := GetGlobalCaptchaMgr()
 		if captchaMgr == nil {
 			resputil.Error(c, "CAPTCHA service not available", resputil.NotSpecified)
 			return
 		}
-		
 		if !captchaMgr.VerifyCaptcha(*req.CaptchaID, *req.Captcha) {
 			resputil.HTTPError(c, http.StatusUnauthorized, "Invalid CAPTCHA", resputil.InvalidCredentials)
 			return
 		}
 	}
-
-	var username, password, passwordLegacy, token string
+	var username, password, token string
 	switch req.AuthMethod {
 	case AuthMethodACTAPI:
 		if req.Token == nil {
@@ -304,9 +287,6 @@ func (mgr *AuthMgr) Login(c *gin.Context) {
 		}
 		username = *req.Username
 		password = *req.Password
-		if req.PasswordLegacy != nil {
-			passwordLegacy = *req.PasswordLegacy
-		}
 		// Username must start with lowercase letter and can only contain lowercase letters, numbers, and hyphens
 		if len(validation.IsDNS1123Label(username)) > 0 {
 			klog.Error("invalid username")
@@ -317,7 +297,6 @@ func (mgr *AuthMgr) Login(c *gin.Context) {
 		resputil.BadRequestError(c, "Invalid auth method")
 		return
 	}
-
 	// Check if request auth method is valid
 	var attributes model.UserAttribute
 	allowRegister := false
@@ -335,7 +314,7 @@ func (mgr *AuthMgr) Login(c *gin.Context) {
 		}
 		allowRegister = !config.GetConfig().RaidsLab.Enable
 	case AuthMethodNormal:
-		if err := mgr.normalAuth(c, username, password, passwordLegacy); err != nil {
+		if err := mgr.normalAuth(c, username, password); err != nil {
 			resputil.HTTPError(c, http.StatusUnauthorized, "Invalid credentials", resputil.InvalidCredentials)
 			return
 		}
@@ -343,7 +322,6 @@ func (mgr *AuthMgr) Login(c *gin.Context) {
 		resputil.BadRequestError(c, "Invalid auth method")
 		return
 	}
-
 	// Check if the user exists, and should create user or return error
 	user, err := mgr.getOrCreateUser(c, &req, &attributes, allowRegister)
 	if err != nil {
@@ -361,7 +339,6 @@ func (mgr *AuthMgr) Login(c *gin.Context) {
 			return
 		}
 	}
-
 	if err = updateUserIfNeeded(c, user, &attributes); err != nil {
 		resputil.Error(c, "Create or update user failed", resputil.NotSpecified)
 		return
@@ -374,25 +351,21 @@ func (mgr *AuthMgr) Login(c *gin.Context) {
 
 	q := query.Account
 	uq := query.UserAccount
-
 	lastUserQueue, err := uq.WithContext(c).Where(uq.UserID.Eq(user.ID)).Last()
 	if err != nil {
 		resputil.Error(c, "User must has at least one queue", resputil.UserNotAllowed)
 		return
 	}
-
 	lastQueue, err := q.WithContext(c).Where(q.ID.Eq(lastUserQueue.AccountID)).First()
 	if err != nil {
 		resputil.Error(c, "User must has at least one queue", resputil.UserNotAllowed)
 		return
 	}
-
 	publicAccessMode := model.AccessModeNA
 	defaultUserQueue, err := uq.WithContext(c).Where(uq.UserID.Eq(user.ID), uq.AccountID.Eq(model.DefaultAccountID)).First()
 	if err == nil {
 		publicAccessMode = defaultUserQueue.AccessMode
 	}
-
 	// Generate JWT tokens
 	jwtMessage := util.JWTMessage{
 		UserID:            user.ID,
@@ -444,23 +417,19 @@ func (mgr *AuthMgr) getOrCreateUser(
 	if attr.Nickname == "" && req.Username != nil {
 		attr.Nickname = *req.Username
 	}
-
 	u := query.User
 	user, err := u.WithContext(c).Where(u.Name.Eq(attr.Name)).First()
 	if err == nil {
 		return user, nil
 	}
-
 	if !errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, err
 	}
-
 	// User not found in the database
 	if allowCreate {
 		// User exists in the auth method but not in the database, create a new user
 		return mgr.createUser(c, attr.Name, nil)
 	}
-
 	return nil, ErrorMustRegister
 }
 
@@ -552,8 +521,6 @@ func (mgr *AuthMgr) createUser(c context.Context, name string, password *string)
 
 	var hashedPassword *string
 	if password != nil {
-		// The password received from frontend is already hashed with SHA-256
-		// We need to bcrypt it again for secure storage
 		passwordStr := *password
 		hashed, err := bcrypt.GenerateFromPassword([]byte(passwordStr), bcrypt.DefaultCost)
 		if err != nil {
@@ -593,7 +560,7 @@ func (mgr *AuthMgr) createUser(c context.Context, name string, password *string)
 	return &user, nil
 }
 
-func (mgr *AuthMgr) normalAuth(c *gin.Context, username, password, passwordLegacy string) error {
+func (mgr *AuthMgr) normalAuth(c *gin.Context, username, password string) error {
 	u := query.User
 	user, err := u.WithContext(c).Where(u.Name.Eq(username)).First()
 	if err != nil {
@@ -605,31 +572,10 @@ func (mgr *AuthMgr) normalAuth(c *gin.Context, username, password, passwordLegac
 		return fmt.Errorf("user does not have a password")
 	}
 
-	// Try new format first: bcrypt(SHA256(password))
-	// The password parameter from frontend is already hashed with SHA-256
-	if bcrypt.CompareHashAndPassword([]byte(*p), []byte(password)) == nil {
-		return nil
+	if bcrypt.CompareHashAndPassword([]byte(*p), []byte(password)) != nil {
+		return fmt.Errorf("wrong username or password")
 	}
-
-	// Backward compatibility: try old format bcrypt(plaintext)
-	// For existing users who signed up before the hash implementation
-	if passwordLegacy != "" {
-		if bcrypt.CompareHashAndPassword([]byte(*p), []byte(passwordLegacy)) == nil {
-			// Password matches old format, migrate to new format
-			klog.Infof("Migrating user %s to new password format", username)
-			newHashed, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-			if err == nil {
-				if _, updateErr := u.WithContext(c).
-					Where(u.ID.Eq(user.ID)).
-					Update(u.Password, string(newHashed)); updateErr != nil {
-					klog.Errorf("Failed to migrate password for user %s: %v", username, updateErr)
-				}
-			}
-			return nil
-		}
-	}
-
-	return fmt.Errorf("wrong username or password")
+	return nil
 }
 
 type (
@@ -692,10 +638,7 @@ func (mgr *AuthMgr) actAPIAuth(_ context.Context, token string, attr *model.User
 
 func (mgr *AuthMgr) actLDAPAuth(_ context.Context, username, password string) error {
 	authConfig := config.GetConfig()
-	
 	// ACT 管理员认证
-	// Note: LDAP authentication requires plaintext password
-	// The frontend sends plaintext for ACT LDAP auth mode
 	l, err := ldap.DialURL(authConfig.RaidsLab.LDAP.Address)
 	if err != nil {
 		return err
@@ -738,11 +681,8 @@ func (mgr *AuthMgr) actLDAPAuth(_ context.Context, username, password string) er
 
 type (
 	SignupReq struct {
-		Username       string  `json:"username" binding:"required"`
-		Password       string  `json:"password" binding:"required"`
-		Contact        string  `json:"contact" binding:"required"`        // Email or phone number
-		VerificationID string  `json:"verificationId" binding:"required"` // Verification session ID
-		Code           string  `json:"code" binding:"required"`           // Verification code
+		Username string `json:"username" binding:"required"`
+		Password string `json:"password" binding:"required"`
 	}
 )
 
@@ -758,24 +698,11 @@ func (mgr *AuthMgr) Signup(c *gin.Context) {
 		return
 	}
 
-	// Verify the verification code
-	verificationMgr := GetGlobalVerificationMgr()
-	if verificationMgr == nil {
-		resputil.Error(c, "Verification service not available", resputil.NotSpecified)
-		return
-	}
-
-	if !verificationMgr.VerifyCodeInternal(req.VerificationID, req.Code) {
-		resputil.Error(c, "Invalid or expired verification code", resputil.InvalidRequest)
-		return
-	}
-
 	u := query.User
 
-	// Check if username already exists
 	_, err := u.WithContext(c).Where(u.Name.Eq(req.Username)).First()
 	if err == nil {
-		resputil.Error(c, "Username already exists", resputil.InvalidRequest)
+		resputil.Error(c, "User already exists", resputil.InvalidRequest)
 		return
 	}
 
@@ -784,23 +711,7 @@ func (mgr *AuthMgr) Signup(c *gin.Context) {
 		return
 	}
 
-	// Check if email/phone is already registered
-	// Query all users and check their attributes for matching contact
-	allUsers, err := u.WithContext(c).Find()
-	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
-		resputil.Error(c, "Failed to check duplicate contact", resputil.NotSpecified)
-		return
-	}
-
-	for _, existingUser := range allUsers {
-		userAttr := existingUser.Attributes.Data()
-		if userAttr.Email != nil && *userAttr.Email == req.Contact {
-			resputil.Error(c, "This email or phone number is already registered", resputil.InvalidRequest)
-			return
-		}
-	}
-
-	user, err := mgr.createUser(c, req.Username, &req.Password)
+	_, err = mgr.createUser(c, req.Username, &req.Password)
 	if err != nil {
 		if errors.Is(err, ErrorUIDServerConnect) {
 			klog.Error("can't connect to UID server")
@@ -814,17 +725,6 @@ func (mgr *AuthMgr) Signup(c *gin.Context) {
 		klog.Error("create new user", err)
 		resputil.Error(c, "Create user failed", resputil.NotSpecified)
 		return
-	}
-
-	// Update user with contact information (email or phone)
-	userAttr := user.Attributes.Data()
-	userAttr.Email = &req.Contact
-	if _, err := u.WithContext(c).
-		Where(u.ID.Eq(user.ID)).
-		Updates(map[string]any{
-			"attributes": datatypes.NewJSONType(userAttr),
-		}); err != nil {
-		klog.Error("update user contact info failed", err)
 	}
 
 	resputil.Success(c, "Signup successful")
@@ -867,28 +767,6 @@ func (mgr *AuthMgr) RefreshToken(c *gin.Context) {
 	}
 
 	resputil.Success(c, refreshTokenResponse)
-}
-
-// Logout godoc
-//
-//	@Summary		用户登出
-//	@Description	使当前 JWT Token 失效
-//	@Tags			Auth
-//	@Accept			json
-//	@Produce		json
-//	@Security		Bearer
-//	@Success		200		{object}	resputil.Response[any]	"登出成功"
-//	@Router			/auth/logout [post]
-func (mgr *AuthMgr) Logout(c *gin.Context) {
-	authHeader := c.Request.Header.Get("Authorization")
-	parts := strings.Split(authHeader, " ")
-	if len(parts) >= 2 && parts[0] == "Bearer" {
-		token := parts[1]
-		// Add token to blacklist with 7 days expiry (max token validity)
-		// Or ideally parsed from token, but 7 days is safe
-		mgr.tokenMgr.BlockToken(token, time.Now().Add(time.Hour*24*7))
-	}
-	resputil.Success(c, "Logged out successfully")
 }
 
 type SwitchQueueReq struct {
