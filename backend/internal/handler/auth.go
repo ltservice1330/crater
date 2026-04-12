@@ -182,54 +182,45 @@ func (mgr *AuthMgr) Check(c *gin.Context) {
 		resputil.Success(c, nil)
 		return
 	}
-
 	token := parts[1]
-
 	// 验证token
 	jwtMessage, err := mgr.tokenMgr.CheckToken(token)
 	if err != nil {
 		resputil.HTTPError(c, http.StatusUnauthorized, err.Error(), resputil.TokenExpired)
 		return
 	}
-
 	// 从数据库获取用户信息
 	u := query.User
 	q := query.Account
 	uq := query.UserAccount
-
 	user, err := u.WithContext(c).Where(u.ID.Eq(jwtMessage.UserID)).First()
 	if err != nil {
 		resputil.Success(c, nil)
 		return
 	}
-
 	// 检查用户状态
 	if user.Status != model.StatusActive {
 		resputil.Success(c, nil)
 		return
 	}
-
 	// 获取当前队列信息
 	currentQueue, err := q.WithContext(c).Where(q.ID.Eq(jwtMessage.AccountID)).First()
 	if err != nil {
 		resputil.Success(c, nil)
 		return
 	}
-
 	// 获取用户队列信息
 	userQueue, err := uq.WithContext(c).Where(uq.UserID.Eq(user.ID), uq.AccountID.Eq(jwtMessage.AccountID)).First()
 	if err != nil {
 		resputil.Success(c, nil)
 		return
 	}
-
 	// 获取公共访问权限
 	publicAccessMode := model.AccessModeNA
 	defaultUserQueue, err := uq.WithContext(c).Where(uq.UserID.Eq(user.ID), uq.AccountID.Eq(model.DefaultAccountID)).First()
 	if err == nil {
 		publicAccessMode = defaultUserQueue.AccessMode
 	}
-
 	// 构造响应
 	checkResponse := CheckResp{
 		Context: AccountContext{
@@ -243,7 +234,6 @@ func (mgr *AuthMgr) Check(c *gin.Context) {
 		User:    user.Attributes.Data(),
 		Version: GetVersionInfo(),
 	}
-
 	resputil.Success(c, checkResponse)
 }
 
@@ -316,7 +306,6 @@ func (mgr *AuthMgr) Login(c *gin.Context) {
 		resputil.BadRequestError(c, "Invalid auth method")
 		return
 	}
-
 	// Check if request auth method is valid
 	var attributes model.UserAttribute
 	allowRegister := false
@@ -342,7 +331,6 @@ func (mgr *AuthMgr) Login(c *gin.Context) {
 		resputil.BadRequestError(c, "Invalid auth method")
 		return
 	}
-
 	// Check if the user exists, and should create user or return error
 	user, err := mgr.getOrCreateUser(c, &req, &attributes, allowRegister)
 	if err != nil {
@@ -360,7 +348,6 @@ func (mgr *AuthMgr) Login(c *gin.Context) {
 			return
 		}
 	}
-
 	if err = updateUserIfNeeded(c, user, &attributes); err != nil {
 		resputil.Error(c, "Create or update user failed", resputil.NotSpecified)
 		return
@@ -373,25 +360,21 @@ func (mgr *AuthMgr) Login(c *gin.Context) {
 
 	q := query.Account
 	uq := query.UserAccount
-
 	lastUserQueue, err := uq.WithContext(c).Where(uq.UserID.Eq(user.ID)).Last()
 	if err != nil {
 		resputil.Error(c, "User must has at least one queue", resputil.UserNotAllowed)
 		return
 	}
-
 	lastQueue, err := q.WithContext(c).Where(q.ID.Eq(lastUserQueue.AccountID)).First()
 	if err != nil {
 		resputil.Error(c, "User must has at least one queue", resputil.UserNotAllowed)
 		return
 	}
-
 	publicAccessMode := model.AccessModeNA
 	defaultUserQueue, err := uq.WithContext(c).Where(uq.UserID.Eq(user.ID), uq.AccountID.Eq(model.DefaultAccountID)).First()
 	if err == nil {
 		publicAccessMode = defaultUserQueue.AccessMode
 	}
-
 	// Generate JWT tokens
 	jwtMessage := util.JWTMessage{
 		UserID:            user.ID,
@@ -443,23 +426,19 @@ func (mgr *AuthMgr) getOrCreateUser(
 	if attr.Nickname == "" && req.Username != nil {
 		attr.Nickname = *req.Username
 	}
-
 	u := query.User
 	user, err := u.WithContext(c).Where(u.Name.Eq(attr.Name)).First()
 	if err == nil {
 		return user, nil
 	}
-
 	if !errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, err
 	}
-
 	// User not found in the database
 	if allowCreate {
 		// User exists in the auth method but not in the database, create a new user
 		return mgr.createUser(c, attr.Name, nil)
 	}
-
 	return nil, ErrorMustRegister
 }
 
