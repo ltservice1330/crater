@@ -71,13 +71,13 @@ func (mgr *AuthMgr) RegisterAdmin(_ *gin.RouterGroup) {}
 
 type (
 	LoginReq struct {
-		AuthMethod      AuthMethod `json:"auth" binding:"required"` // [normal, act-ldap, act-api]
-		Username        *string    `json:"username"`                // (act-ldap, normal)
-		Password        *string    `json:"password"`                // (act-ldap, normal) - hashed for normal auth
-		PasswordLegacy  *string    `json:"passwordLegacy"`          // plaintext password for backward compatibility
-		Token           *string    `json:"token"`                   // (act-api)
-		CaptchaID       *string    `json:"captchaId"`               // CAPTCHA ID
-		Captcha         *string    `json:"captcha"`                 // CAPTCHA answer
+		AuthMethod     AuthMethod `json:"auth" binding:"required"` // [normal, act-ldap, act-api]
+		Username       *string    `json:"username"`                // (act-ldap, normal)
+		Password       *string    `json:"password"`                // (act-ldap, normal) - hashed for normal auth
+		PasswordLegacy *string    `json:"passwordLegacy"`          // plaintext password for backward compatibility
+		Token          *string    `json:"token"`                   // (act-api)
+		CaptchaID      *string    `json:"captchaId"`               // CAPTCHA ID
+		Captcha        *string    `json:"captcha"`                 // CAPTCHA answer
 	}
 
 	LoginResp struct {
@@ -739,11 +739,11 @@ func (mgr *AuthMgr) actLDAPAuth(_ context.Context, username, password string) er
 
 type (
 	SignupReq struct {
-		Username       string  `json:"username" binding:"required"`
-		Password       string  `json:"password" binding:"required"`
-		Contact        string  `json:"contact" binding:"required"`        // Email or phone number
-		VerificationID string  `json:"verificationId" binding:"required"` // Verification session ID
-		Code           string  `json:"code" binding:"required"`           // Verification code
+		Username       string `json:"username" binding:"required"`
+		Password       string `json:"password" binding:"required"`
+		Contact        string `json:"contact" binding:"required"`        // Email or phone number
+		VerificationID string `json:"verificationId" binding:"required"` // Verification session ID
+		Code           string `json:"code" binding:"required"`           // Verification code
 	}
 )
 

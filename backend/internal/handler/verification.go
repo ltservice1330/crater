@@ -350,6 +350,7 @@ func (mgr *VerificationMgr) doSendSMS(token, apiUrl, phone, code, busiCode strin
 	// Send verification sms using the provided specification
 	sendUrl := fmt.Sprintf("%s/smsapi/sms/send", apiUrl)
 	var result map[string]interface{}
+
 	body := map[string]interface{}{
 		"busiCode":  busiCode,
 		"phone":     phone,
