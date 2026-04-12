@@ -355,7 +355,7 @@ func (mgr *VerificationMgr) doSendSMS(token, apiUrl, phone, code, busiCode strin
 		"visualMobile": visualMobile, // This correctly translates to null if visualMobile pointer is nil
 	}
 
-	resp, err := mgr.req.R().
+	_, err := mgr.req.R().
 		SetHeader("access_token", token).
 		SetBody(body).
 		SetSuccessResult(&result).
