@@ -27,6 +27,9 @@ import { IUserAttributes } from './admin/user'
 export interface ISignup {
   userName: string
   password: string
+  contact: string
+  verificationId: string
+  code: string
 }
 
 /**
@@ -37,6 +40,7 @@ export interface ILogin {
   token?: string
   username?: string
   password?: string
+  passwordLegacy?: string
   captchaId?: string
   captcha?: string
 }
@@ -104,6 +108,8 @@ export const apiGetAuthMode = () => apiGet<IResponse<AuthMode>>('auth/mode')
 export const apiLogin = (user: ILogin) => apiPost<IResponse<IAuthResponse>>('auth/login', user)
 
 export const apiCheckToken = () => apiGet<IResponse<ICheckResponse | undefined>>('auth/check')
+
+export const apiLogout = () => apiPost('auth/logout')
 
 export const apiQueueSwitch = async (queue: string) => {
   const response = await apiV1Post<IResponse<IAuthResponse>>('auth/switch', {

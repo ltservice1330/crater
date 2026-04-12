@@ -19,7 +19,7 @@ import { useNavigate } from '@tanstack/react-router'
 import { isAxiosError } from 'axios'
 import { useAtomValue, useSetAtom } from 'jotai'
 import { RefreshCw } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
@@ -66,6 +66,7 @@ import {
 } from '@/services/error_code'
 import { IErrorResponse, IResponse } from '@/services/types'
 
+import { hashPassword } from '@/utils/password-hash'
 import { atomPrivacyAccepted, atomUserContext, atomUserInfo, useResetStore } from '@/utils/store'
 import { configUrlWebsiteBaseAtom } from '@/utils/store/config'
 
@@ -152,7 +153,7 @@ export function LoginForm({
   })
 
   // Load CAPTCHA on component mount
-  const loadCaptcha = async () => {
+  const loadCaptcha = useCallback(async () => {
     setLoadingCaptcha(true)
     try {
       const response = await apiGenerateCaptcha()
@@ -168,17 +169,18 @@ export function LoginForm({
     } finally {
       setLoadingCaptcha(false)
     }
-  }
+  }, [form])
 
   useEffect(() => {
     loadCaptcha()
-  }, [])
+  }, [loadCaptcha])
 
   const { mutate: loginUser, status } = useMutation({
     mutationFn: (values: {
       auth: string
       username?: string
       password?: string
+      passwordLegacy?: string
       token?: string
       captchaId?: string
       captcha?: string
@@ -187,12 +189,13 @@ export function LoginForm({
         auth: values.auth,
         username: values.username,
         password: values.password,
+        passwordLegacy: values.passwordLegacy,
         token: values.token,
         captchaId: values.captchaId,
         captcha: values.captcha,
       }),
     onSuccess: async ({ data }) => {
-      await queryClient.invalidateQueries()
+      queryClient.clear()
       setUserState({
         ...data.user,
         space: data.context.space,
@@ -234,13 +237,29 @@ export function LoginForm({
     },
   })
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
     if (status !== 'pending') {
       // zod 已经保证 acceptPrivacy === true，走到这里就是已同意
       resetAll()
+
+      // For normal auth: hash password and send both hashed and plaintext for backward compatibility
+      // LDAP authentication requires plaintext password only
+      let password: string
+      let passwordLegacy: string | undefined
+
+      if (authMode === AuthMode.ACT) {
+        // ACT LDAP: send plaintext only
+        password = values.password
+      } else {
+        // Normal auth: send hashed password + plaintext for migration
+        password = await hashPassword(values.password, values.username)
+        passwordLegacy = values.password
+      }
+
       loginUser({
         username: values.username,
-        password: values.password,
+        password: password,
+        passwordLegacy: passwordLegacy,
         captchaId: captchaData?.id,
         captcha: values.captcha,
         auth: authMode == AuthMode.ACT ? 'act-ldap' : 'normal',

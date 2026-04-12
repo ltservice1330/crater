@@ -51,11 +51,11 @@ export const PhaseBadge = <T,>({
   }
 
   return (
-    <Badge
-      className={cn('flex cursor-help items-center gap-1 border-none px-2 py-0.5', data.color)}
-      variant="outline"
-    >
-      {data.label}
+    <Badge className={cn('border-none', data.color)} variant="outline">
+      <div className="flex items-center gap-1.5">
+        <div className="h-2 w-2 rounded-full bg-current" />
+        <span>{data.label}</span>
+      </div>
     </Badge>
   )
   //}
