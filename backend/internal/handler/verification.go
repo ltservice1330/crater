@@ -319,12 +319,12 @@ func (mgr *VerificationMgr) SendVerificationCode(c *gin.Context) {
 }
 
 func (mgr *VerificationMgr) getSMSToken(apiUrl, appID, secret string) (string, error) {
-	loginUrl := fmt.Sprintf("%s/smsapi/sms/login", apiUrl)
+	loginUrl := fmt.Sprintf("%s/smsapi/login", apiUrl)
 	var result struct {
 		Code    string `json:"code"`
 		Message string `json:"message"`
 		Data    struct {
-			AccessToken string `json:"access_token"`
+			AccessToken string `json:"accsee_token"`
 		} `json:"data"`
 	}
 
@@ -346,19 +346,21 @@ func (mgr *VerificationMgr) getSMSToken(apiUrl, appID, secret string) (string, e
 	return result.Data.AccessToken, nil
 }
 
-func (mgr *VerificationMgr) doSendSMS(token, apiUrl, phone, code, busiCode string, visualMobile *string) (string, error) {
+func (mgr *VerificationMgr) doSendSMS(token, apiUrl, phone, code string) (string, error) {
 	// Send verification sms using the provided specification
-	sendUrl := fmt.Sprintf("%s/smsapi/sms/send", apiUrl)
+	sendUrl := fmt.Sprintf("%s/smsapi/sms/sendPeer", apiUrl)
 	var result map[string]any
 	body := map[string]any{
-		"busiCode":  busiCode,
-		"phone":     phone,
-		"sendDelay": "false",
-		"sendType":  "1",
+		"busiCode":   "1102",
+		"phone":      phone,
+		"sendDelay":  "false",
+		"sendType":   "1",
+		"templateId": "1236751889946853376",
 		"values": map[string]string{
 			"code": code,
+			"time": "5",
 		},
-		"visualMobile": visualMobile, // This correctly translates to null if visualMobile pointer is nil
+		"visualMobile": "15652359557", // This correctly translates to null if visualMobile pointer is nil
 	}
 
 	_, err := mgr.req.R().
@@ -394,12 +396,7 @@ func (mgr *VerificationMgr) sendCustomSMS(phone, code string) error {
 		token = newToken
 	}
 
-	var vm *string
-	if cfg.VisualMobile != "" {
-		vm = &cfg.VisualMobile
-	}
-
-	respCode, err := mgr.doSendSMS(token, cfg.APIURL, phone, code, cfg.BusiCode, vm)
+	respCode, err := mgr.doSendSMS(token, cfg.APIURL, phone, code)
 	if err != nil {
 		return err
 	}
@@ -417,7 +414,7 @@ func (mgr *VerificationMgr) sendCustomSMS(phone, code string) error {
 		token = newToken
 
 		// Retry SMS sending process once
-		respCode, err = mgr.doSendSMS(token, cfg.APIURL, phone, code, cfg.BusiCode, vm)
+		respCode, err = mgr.doSendSMS(token, cfg.APIURL, phone, code)
 		if err != nil {
 			return err
 		}
