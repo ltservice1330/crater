@@ -25,7 +25,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  REPOSITORY: raids-lab
+  REPOSITORY: ${{ github.repository_owner }}
 
 jobs:
   publish-chart:
