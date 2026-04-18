@@ -7,6 +7,11 @@ metadata:
     {{- if eq .Values.protocol "https" }}
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
     {{- end }}
+    nginx.ingress.kubernetes.io/server-snippet: | 
+      location = /config.json {
+        deny all;
+        return 403;
+      }
 spec:
   ingressClassName: nginx
   {{- if eq .Values.protocol "https" }}
