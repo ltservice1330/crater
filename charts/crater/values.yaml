@@ -291,6 +291,25 @@ backendConfig:
         noProxy: null
       # Container image references will be automatically populated from the top-level images section
 
+  verification:
+    email:
+      enable: false
+      provider: ""
+      apiKey: ""
+      fromEmail: ""
+      fromName: ""
+    sms:
+      enable: false
+      provider: ""
+      apiUrl: ""
+      appId: "<MASKED>"
+      secret: "<MASKED>"
+      accessKeyId: "<MASKED>"
+      accessKeySecret: "<MASKED>"
+      signName: ""
+      templateCode: ""
+      regionId: "cn-hangzhou"
+
   # -- Configuration for email notifications via SMTP
   # If Enable is false, email notifications will be disabled
   smtp:
