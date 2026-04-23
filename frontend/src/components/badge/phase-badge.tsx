@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 //import { Badge } from '@/components/ui/badge'
-
 //import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
-
 import { cn } from '@/lib/utils'
 
 export interface PhaseBadgeData {
@@ -41,7 +39,12 @@ export const PhaseBadge = <T,>({
   // 如果禁用 tooltip,直接返回 badge
   if (disableDefaultTooltip) {
     return (
-      <div className={cn('inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2', data.color)}>
+      <div
+        className={cn(
+          'focus:ring-ring inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:ring-2 focus:ring-offset-2 focus:outline-none',
+          data.color
+        )}
+      >
         <div className="flex items-center gap-1.5">
           <div className="h-2 w-2 rounded-full bg-current" />
           <span>{data.label}</span>
@@ -51,13 +54,18 @@ export const PhaseBadge = <T,>({
   }
 
   return (
-      <div className={cn('inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2', data.color)}>
-        <div className="flex items-center gap-1.5">
-          <div className="h-2 w-2 rounded-full bg-current" />
-          <span>{data.label}</span>
-        </div>
+    <div
+      className={cn(
+        'focus:ring-ring inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:ring-2 focus:ring-offset-2 focus:outline-none',
+        data.color
+      )}
+    >
+      <div className="flex items-center gap-1.5">
+        <div className="h-2 w-2 rounded-full bg-current" />
+        <span>{data.label}</span>
       </div>
-    )
+    </div>
+  )
   //}
 
   // return (
