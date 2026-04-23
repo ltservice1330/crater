@@ -250,7 +250,9 @@ export function SignupForm() {
                   isLoading={isSendingCode}
                   isLoadingText="发送中"
                 >
-                  {countdown > 0 ? `${countdown}秒后重试` : '获取验证码'}
+                  <span className={isSendingCode ? 'opacity-0' : 'opacity-100'}>
+                    {countdown > 0 ? `${countdown}秒后重试` : '获取验证码'}
+                  </span>
                 </LoadableButton>
               </div>
               <FormMessage />

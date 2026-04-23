@@ -100,11 +100,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const logout = async () => {
-    try {
-      await apiLogout()
-    } catch (e) {
-      logger.error('Failed to logout on server:', e)
-    }
     setIsAuthenticated(false)
     setLastView('portal')
     localStorage.removeItem(ACCESS_TOKEN_KEY)
@@ -115,6 +110,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     queryClient.clear()
     resetAll()
     toast.success(t('navUser.loggedOut'))
+
+    try {
+      await apiLogout()
+    } catch (e) {
+      logger.error('Failed to logout on server:', e)
+    }
   }
 
   return (

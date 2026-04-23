@@ -41,23 +41,23 @@ export const PhaseBadge = <T,>({
   // 如果禁用 tooltip,直接返回 badge
   if (disableDefaultTooltip) {
     return (
-      <Badge
-        className={cn('flex cursor-help items-center gap-1 border-none px-2 py-0.5', data.color)}
-        variant="outline"
-      >
-        {data.label}
-      </Badge>
+      <div className={cn('inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2', data.color)}>
+        <div className="flex items-center gap-1.5">
+          <div className="h-2 w-2 rounded-full bg-current" />
+          <span>{data.label}</span>
+        </div>
+      </div>
     )
   }
 
   return (
-    <Badge className={cn('border-none', data.color)} variant="outline">
-      <div className="flex items-center gap-1.5">
-        <div className="h-2 w-2 rounded-full bg-current" />
-        <span>{data.label}</span>
+      <div className={cn('inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2', data.color)}>
+        <div className="flex items-center gap-1.5">
+          <div className="h-2 w-2 rounded-full bg-current" />
+          <span>{data.label}</span>
+        </div>
       </div>
-    </Badge>
-  )
+    )
   //}
 
   // return (
