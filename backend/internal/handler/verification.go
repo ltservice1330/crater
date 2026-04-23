@@ -321,7 +321,7 @@ func (mgr *VerificationMgr) SendVerificationCode(c *gin.Context) {
 func (mgr *VerificationMgr) getSMSToken(apiUrl, appID, secret string) (string, error) {
 	loginUrl := fmt.Sprintf("%s/smsapi/login", apiUrl)
 	var result struct {
-		Code    string `json:"code"`
+		Code    any    `json:"code"`
 		Message string `json:"message"`
 		Data    struct {
 			AccessToken string `json:"accsee_token"`
@@ -339,8 +339,10 @@ func (mgr *VerificationMgr) getSMSToken(apiUrl, appID, secret string) (string, e
 	if err != nil {
 		return "", err
 	}
-	if !resp.IsSuccessState() || result.Code != "200" {
-		return "", fmt.Errorf("failed to login sms api: %s", result.Message)
+
+	codeStr := fmt.Sprintf("%v", result.Code)
+	if !resp.IsSuccessState() || codeStr != "200" {
+		return "", fmt.Errorf("failed to login sms api: code %s, message %s", codeStr, result.Message)
 	}
 
 	return result.Data.AccessToken, nil
