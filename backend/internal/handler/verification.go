@@ -29,14 +29,16 @@ const (
 	maxVerifyAttempts      = 5
 	bytelength             = 16
 	maxBigInt              = 900000
+	smsTokenTTLMinutes     = 30
 )
 
 type VerificationMgr struct {
-	name     string
-	store    *VerificationStore
-	req      *imrocreq.Client
-	smsToken string
-	smsMu    sync.RWMutex
+	name           string
+	store          *VerificationStore
+	req            *imrocreq.Client
+	smsToken       string
+	smsTokenExpiry time.Time
+	smsMu          sync.RWMutex
 }
 
 func NewVerificationMgr(_ *RegisterConfig) Manager {
@@ -386,14 +388,20 @@ func (mgr *VerificationMgr) sendCustomSMS(phone, code string) error {
 	token := mgr.smsToken
 	mgr.smsMu.RUnlock()
 
-	// Initial token retrieval if empty
-	if token == "" {
+	// Retrieve token if empty or expired
+	mgr.smsMu.RLock()
+	tokenExpired := time.Now().After(mgr.smsTokenExpiry)
+	mgr.smsMu.RUnlock()
+
+	if token == "" || tokenExpired {
+		klog.Info("SMS access token empty or expired, requesting new token...")
 		newToken, err := mgr.getSMSToken(cfg.APIURL, cfg.AppID, cfg.Secret)
 		if err != nil {
 			return err
 		}
 		mgr.smsMu.Lock()
 		mgr.smsToken = newToken
+		mgr.smsTokenExpiry = time.Now().Add(smsTokenTTLMinutes * time.Minute)
 		mgr.smsMu.Unlock()
 		token = newToken
 	}
@@ -412,6 +420,7 @@ func (mgr *VerificationMgr) sendCustomSMS(phone, code string) error {
 		}
 		mgr.smsMu.Lock()
 		mgr.smsToken = newToken
+		mgr.smsTokenExpiry = time.Now().Add(smsTokenTTLMinutes * time.Minute)
 		mgr.smsMu.Unlock()
 		token = newToken
 

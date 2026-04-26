@@ -109,7 +109,7 @@ export const apiLogin = (user: ILogin) => apiPost<IResponse<IAuthResponse>>('aut
 
 export const apiCheckToken = () => apiGet<IResponse<ICheckResponse | undefined>>('auth/check')
 
-export const apiLogout = () => apiPost('auth/logout')
+export const apiLogout = () => apiV1Post('auth/logout')
 
 export const apiQueueSwitch = async (queue: string) => {
   const response = await apiV1Post<IResponse<IAuthResponse>>('auth/switch', {

@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-//import { Badge } from '@/components/ui/badge'
-//import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { Badge } from '@/components/ui/badge'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+
 import { cn } from '@/lib/utils'
 
 export interface PhaseBadgeData {
@@ -32,7 +33,7 @@ interface PhaseBadgeProps<T> {
 export const PhaseBadge = <T,>({
   phase,
   getPhaseLabel,
-  disableDefaultTooltip = true,
+  disableDefaultTooltip = false,
 }: PhaseBadgeProps<T>) => {
   const data = getPhaseLabel(phase)
 
@@ -53,33 +54,33 @@ export const PhaseBadge = <T,>({
     )
   }
 
-  return (
-    <div
-      className={cn(
-        'focus:ring-ring inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:ring-2 focus:ring-offset-2 focus:outline-none',
-        data.color
-      )}
-    >
-      <div className="flex items-center gap-1.5">
-        <div className="h-2 w-2 rounded-full bg-current" />
-        <span>{data.label}</span>
-      </div>
-    </div>
-  )
+  // return (
+  //   <div
+  //     className={cn(
+  //       'focus:ring-ring inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:ring-2 focus:ring-offset-2 focus:outline-none',
+  //       data.color
+  //     )}
+  //   >
+  //     <div className="flex items-center gap-1.5">
+  //       <div className="h-2 w-2 rounded-full bg-current" />
+  //       <span>{data.label}</span>
+  //     </div>
+  //   </div>
+  // )
   //}
 
-  // return (
-  //   <TooltipProvider delayDuration={100}>
-  //     <Tooltip>
-  //       <TooltipTrigger asChild>
-  //         <Badge className={cn('cursor-help border-none', data.color)} variant="outline">
-  //           <div>{data.label}</div>
-  //         </Badge>
-  //       </TooltipTrigger>
-  //       <TooltipContent>
-  //         <p>{data.description}</p>
-  //       </TooltipContent>
-  //     </Tooltip>
-  //   </TooltipProvider>
-  // )
+  return (
+    <TooltipProvider delayDuration={100}>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Badge className={cn('cursor-help border-none', data.color)} variant="outline">
+            <div>{data.label}</div>
+          </Badge>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>{data.description}</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  )
 }
