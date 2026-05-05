@@ -180,7 +180,6 @@ export function LoginForm({
       auth: string
       username?: string
       password?: string
-      passwordLegacy?: string
       token?: string
       captchaId?: string
       captcha?: string
@@ -189,7 +188,6 @@ export function LoginForm({
         auth: values.auth,
         username: values.username,
         password: values.password,
-        passwordLegacy: values.passwordLegacy,
         token: values.token,
         captchaId: values.captchaId,
         captcha: values.captcha,
@@ -242,24 +240,21 @@ export function LoginForm({
       // zod 已经保证 acceptPrivacy === true，走到这里就是已同意
       resetAll()
 
-      // For normal auth: hash password and send both hashed and plaintext for backward compatibility
+      // For normal auth: hash password before sending
       // LDAP authentication requires plaintext password only
       let password: string
-      let passwordLegacy: string | undefined
 
       if (authMode === AuthMode.ACT) {
-        // ACT LDAP: send plaintext only
+        // ACT LDAP: send plaintext only (required by LDAP protocol)
         password = values.password
       } else {
-        // Normal auth: send hashed password + plaintext for migration
+        // Normal auth: send hashed password only (no plaintext)
         password = await hashPassword(values.password, values.username)
-        passwordLegacy = values.password
       }
 
       loginUser({
         username: values.username,
         password: password,
-        passwordLegacy: passwordLegacy,
         captchaId: captchaData?.id,
         captcha: values.captcha,
         auth: authMode == AuthMode.ACT ? 'act-ldap' : 'normal',

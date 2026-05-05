@@ -40,7 +40,6 @@ export interface ILogin {
   token?: string
   username?: string
   password?: string
-  passwordLegacy?: string
   captchaId?: string
   captcha?: string
 }
@@ -109,7 +108,10 @@ export const apiLogin = (user: ILogin) => apiPost<IResponse<IAuthResponse>>('aut
 
 export const apiCheckToken = () => apiGet<IResponse<ICheckResponse | undefined>>('auth/check')
 
-export const apiLogout = () => apiV1Post('auth/logout')
+export const apiLogout = () => {
+  const refreshToken = localStorage.getItem(REFRESH_TOKEN_KEY) || ''
+  return apiV1Post('auth/logout', { refreshToken })
+}
 
 export const apiQueueSwitch = async (queue: string) => {
   const response = await apiV1Post<IResponse<IAuthResponse>>('auth/switch', {

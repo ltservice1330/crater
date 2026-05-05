@@ -594,7 +594,7 @@ func (mgr *AuthMgr) createUser(c context.Context, name string, password *string)
 	return &user, nil
 }
 
-func (mgr *AuthMgr) normalAuth(c *gin.Context, username, password, passwordLegacy string) error {
+func (mgr *AuthMgr) normalAuth(c *gin.Context, username, password, _ string) error {
 	u := query.User
 	user, err := u.WithContext(c).Where(u.Name.Eq(username)).First()
 	if err != nil {
@@ -606,29 +606,15 @@ func (mgr *AuthMgr) normalAuth(c *gin.Context, username, password, passwordLegac
 		return fmt.Errorf("user does not have a password")
 	}
 
-	// Try new format first: bcrypt(SHA256(password))
+	// Verify password: bcrypt(SHA256(password))
 	// The password parameter from frontend is already hashed with SHA-256
 	if bcrypt.CompareHashAndPassword([]byte(*p), []byte(password)) == nil {
 		return nil
 	}
 
-	// Backward compatibility: try old format bcrypt(plaintext)
-	// For existing users who signed up before the hash implementation
-	if passwordLegacy != "" {
-		if bcrypt.CompareHashAndPassword([]byte(*p), []byte(passwordLegacy)) == nil {
-			// Password matches old format, migrate to new format
-			klog.Infof("Migrating user %s to new password format", username)
-			newHashed, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-			if err == nil {
-				if _, updateErr := u.WithContext(c).
-					Where(u.ID.Eq(user.ID)).
-					Update(u.Password, string(newHashed)); updateErr != nil {
-					klog.Errorf("Failed to migrate password for user %s: %v", username, updateErr)
-				}
-			}
-			return nil
-		}
-	}
+	// If verification fails, the user may have an old bcrypt(plaintext) password
+	// that was never migrated. They will need to reset their password.
+	klog.Warningf("Password verification failed for user %s. If this is a pre-migration account, password reset is required.", username)
 
 	return fmt.Errorf("wrong username or password")
 }
@@ -882,25 +868,38 @@ func (mgr *AuthMgr) RefreshToken(c *gin.Context) {
 	resputil.Success(c, refreshTokenResponse)
 }
 
+type LogoutReq struct {
+	RefreshToken string `json:"refreshToken"` // Optional: refresh token to also invalidate
+}
+
 // Logout godoc
 //
 //	@Summary		用户登出
-//	@Description	使当前 JWT Token 失效
+//	@Description	使当前 JWT Token 和 Refresh Token 失效
 //	@Tags			Auth
 //	@Accept			json
 //	@Produce		json
 //	@Security		Bearer
+//	@Param			data	body		LogoutReq				false	"登出请求（可选传入refreshToken）"
 //	@Success		200		{object}	resputil.Response[any]	"登出成功"
 //	@Router			/auth/logout [post]
 func (mgr *AuthMgr) Logout(c *gin.Context) {
+	blockExpiry := time.Now().Add(time.Hour * maxLogoutTokenExpiryHours)
+
+	// Block the access token
 	authHeader := c.Request.Header.Get("Authorization")
 	parts := strings.Split(authHeader, " ")
 	if len(parts) >= 2 && parts[0] == "Bearer" {
 		token := parts[1]
-		// Add token to blacklist with 7 days expiry (max token validity)
-		// Or ideally parsed from token, but 7 days is safe
-		mgr.tokenMgr.BlockToken(token, time.Now().Add(time.Hour*maxLogoutTokenExpiryHours))
+		mgr.tokenMgr.BlockToken(token, blockExpiry)
 	}
+
+	// Also block the refresh token if provided
+	var req LogoutReq
+	if err := c.ShouldBindJSON(&req); err == nil && req.RefreshToken != "" {
+		mgr.tokenMgr.BlockToken(req.RefreshToken, blockExpiry)
+	}
+
 	resputil.Success(c, "Logged out successfully")
 }
 
