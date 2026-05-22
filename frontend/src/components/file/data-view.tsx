@@ -16,7 +16,14 @@
 // i18n-processed-v1.1.0
 import { useQuery } from '@tanstack/react-query'
 import { Link, linkOptions } from '@tanstack/react-router'
-import { BarChart2Icon, BotIcon, DatabaseZapIcon, DownloadIcon, PackageIcon, PlusIcon } from 'lucide-react'
+import {
+  BarChart2Icon,
+  BotIcon,
+  DatabaseZapIcon,
+  DownloadIcon,
+  PackageIcon,
+  PlusIcon,
+} from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
