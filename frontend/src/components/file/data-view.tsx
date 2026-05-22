@@ -16,7 +16,7 @@
 // i18n-processed-v1.1.0
 import { useQuery } from '@tanstack/react-query'
 import { Link, linkOptions } from '@tanstack/react-router'
-import { BotIcon, DatabaseZapIcon, DownloadIcon, PackageIcon, PlusIcon } from 'lucide-react'
+import { BarChart2Icon, BotIcon, DatabaseZapIcon, DownloadIcon, PackageIcon, PlusIcon } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -115,6 +115,16 @@ export function DataView({ apiGetDataset, sourceType }: DatesetTableProps) {
       }}
       actionArea={
         <div className="flex flex-row gap-3">
+          {sourceType === 'model' && (
+            <Button
+              variant="outline"
+              className="min-w-fit"
+              onClick={() => window.open('/anti_fraud_models.html', '_blank')}
+            >
+              <BarChart2Icon className="size-4" />
+              可视化试用
+            </Button>
+          )}
           {!isShareFile && (
             <Link
               to={
