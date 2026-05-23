@@ -98,7 +98,7 @@ import { REFETCH_INTERVAL } from '@/lib/constants'
 import { getNewJobLink } from '../new-job-button'
 import JobOrderList from './job-order-list'
 import { PodTable } from './pod-table'
-import { SSHPortDialog } from './s-s-h-port-dialog'
+// import { SSHPortDialog } from './s-s-h-port-dialog'
 
 export default function BaseCore({ jobName, ...props }: DetailPageCoreProps & { jobName: string }) {
   useFixedLayout()
@@ -217,9 +217,9 @@ export default function BaseCore({ jobName, ...props }: DetailPageCoreProps & { 
                   {isSingleJob(data.jobType) && (
                     <PrefixLinkButton names={ingressNames} prefixes={ingressPrefixes} />
                   )}
-                  {isSingleJob(data.jobType) && (
+                  {/* {isSingleJob(data.jobType) && (
                     <SSHPortDialog jobName={jobName} userName={data.username} />
-                  )}
+                  )} */}
                   {isSingleJob(data.jobType) && (
                     <SimpleTooltip tooltip="将当前运行的容器快照保存为私有镜像">
                       <Button
