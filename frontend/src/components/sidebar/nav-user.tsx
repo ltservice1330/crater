@@ -18,11 +18,11 @@ import { Link, useNavigate } from '@tanstack/react-router'
 import { useAtomValue, useSetAtom } from 'jotai'
 import {
   BadgeCheck,
-  BookOpenIcon,
+  // BookOpenIcon,
   ChevronsUpDown,
   Globe,
   LogOut,
-  MessageSquareMoreIcon,
+  // MessageSquareMoreIcon,
   Moon,
   Sparkles,
   Sun,
@@ -60,11 +60,11 @@ import { useAuth } from '@/hooks/use-auth'
 
 import { getUserPseudonym } from '@/utils/pseudonym'
 import { atomUserContext, atomUserInfo, globalHideUsername, globalLastView } from '@/utils/store'
-import { configUrlWebsiteBaseAtom } from '@/utils/store/config'
+// import { configUrlWebsiteBaseAtom } from '@/utils/store/config'
 import { useTheme } from '@/utils/theme'
 
 export function NavUser() {
-  const website = useAtomValue(configUrlWebsiteBaseAtom)
+  // const website = useAtomValue(configUrlWebsiteBaseAtom)
   const { isMobile } = useSidebar()
   const user = useAtomValue(atomUserInfo)
   const context = useAtomValue(atomUserContext)
@@ -148,7 +148,7 @@ export function NavUser() {
                   {t('navUser.personalPage')}
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => window.open(website)}>
+              {/* <DropdownMenuItem onClick={() => window.open(website)}>
                 <BookOpenIcon />
                 {t('navUser.platformDocs')}
               </DropdownMenuItem>
@@ -157,7 +157,7 @@ export function NavUser() {
               >
                 <MessageSquareMoreIcon />
                 {t('navUser.feedback')}
-              </DropdownMenuItem>
+              </DropdownMenuItem> */}
               <DropdownMenuItem onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
                 {theme === 'light' ? <Moon /> : <Sun />}
                 {theme === 'light' ? t('navUser.darkMode') : t('navUser.lightMode')}
