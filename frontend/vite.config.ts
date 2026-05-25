@@ -46,6 +46,7 @@ export default defineConfig(({ mode }) => {
     },
     server: {
       proxy: {
+        // 原有配置
         '/api/v1/websocket': {
           target: `ws://${backendHost}`,
           changeOrigin: true,
@@ -58,6 +59,33 @@ export default defineConfig(({ mode }) => {
         '/api': {
           target: backendUrl,
           changeOrigin: true,
+        },
+
+        // 反欺诈模型代理
+        '/proxy/visual': {
+          target: 'http://192.168.237.27:5050',
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/proxy\/visual/, ''),
+        },
+        '/proxy/audio': {
+          target: 'http://192.168.237.11:5005',
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/proxy\/audio/, ''),
+        },
+        '/proxy/scene': {
+          target: 'http://192.168.80.12:7002',
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/proxy\/scene/, ''),
+        },
+        '/proxy/summary': {
+          target: 'http://192.168.237.11:7001',
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/proxy\/summary/, ''),
+        },
+        '/proxy/agent': {
+          target: 'http://192.168.237.13:8001',
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/proxy\/agent/, ''),
         },
       },
     },
