@@ -591,7 +591,7 @@
 
   /* ── Model Config ── */
   const MODELS = {
-    visual:  { title: '视觉伪造识别模型',    icon: 'image',         desc: '基于CADDM深度学习模型，自动检测图片是否经过AI伪造、深度换脸（Deepfake）或时序篡改，输出真伪判定与置信度。', apiUrl: '/proxy/visual/sjgj/predict', type: 'image' },
+    visual:  { title: '视觉伪造识别模型',    icon: 'image',         desc: '基于CADDM深度学习模型，自动检测图片是否经过AI伪造、深度换脸（Deepfake）或时序篡改，输出真伪判定与置信度。', apiUrl: 'http://localhost:8080/proxy/visual/sjgj/predict', type: 'image' },
     audio:   { title: '音频伪造识别模型',    icon: 'music',         desc: '基于声学声纹与神经网络分析，识别音频是否为 AI 合成、语音克隆或噪声辅助伪造，输出真伪判定与置信度。', apiUrl: '/proxy/audio/sjgj/sync', type: 'audio' },
     message: { title: '涉诈短信识别模型',    icon: 'mail', desc: '基于海量现网涉诈话术，分析短信内容是否与涉诈内容相关，输出短信内容所属类别。', apiUrl: '', type: 'message' },
     scene:   { title: '涉诈通话场景识别模型', icon: 'clipboardList', desc: '输入话术文本或上传语音，自动识别话术是否属于冒充公检法、网络刷单、兼职赚钱、贷款诱骗等诈骗场景。', apiUrl: '/proxy/scene/fz_predict', type: 'text-classify' },
