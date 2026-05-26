@@ -591,14 +591,14 @@
 
   /* ── Model Config ── */
   const MODELS = {
-    visual:  { title: '视觉伪造识别模型',    icon: 'image',         desc: '基于CADDM深度学习模型，自动检测图片是否经过AI伪造、深度换脸（Deepfake）或时序篡改，输出真伪判定与置信度。', apiUrl: '/proxy/visual/sjgj/predict', type: 'image' },
+    visual:  { title: '视觉伪造识别模型',    icon: 'image',         desc: '基于CADDM深度学习模型，自动检测图片是否经过AI伪造、深度换脸（Deepfake）或时序篡改，输出真伪判定与置信度。', apiUrl: 'http://localhost:8080/proxy/visual/sjgj/predict', type: 'image' },
     audio:   { title: '音频伪造识别模型',    icon: 'music',         desc: '基于声学声纹与神经网络分析，识别音频是否为 AI 合成、语音克隆或噪声辅助伪造，输出真伪判定与置信度。', apiUrl: '/proxy/audio/sjgj/sync', type: 'audio' },
     message: { title: '涉诈短信识别模型',    icon: 'mail', desc: '基于海量现网涉诈话术，分析短信内容是否与涉诈内容相关，输出短信内容所属类别。', apiUrl: '', type: 'message' },
     scene:   { title: '涉诈通话场景识别模型', icon: 'clipboardList', desc: '输入话术文本或上传语音，自动识别话术是否属于冒充公检法、网络刷单、兼职赚钱、贷款诱骗等诈骗场景。', apiUrl: '/proxy/scene/fz_predict', type: 'text-classify' },
     summary: { title: '涉诈通话智能摘要模型', icon: 'fileText',     desc: '对诈骗话术内容进行智能摘要，提炼关键证词证据、风险要点、时序信息，辅助快速研判处置。', apiUrl: '/proxy/summary/counter/fraud/gen', type: 'text-summary' },
-    kyc:     { title: '入网复机实人核验模型', icon: 'idCard',       desc: '通过人脸图像比对、活体检测与证件核验，判定办理入网或多模态业务的用户是否为本人，防止他人代办冒用。', apiUrl: '', type: 'kyc-dual' },
+    kyc:     { title: '入网复机实人核验模型', icon: 'idCard',       desc: '通过人脸图像比对、活体检测与证件核验，判定办理入网或多模态业务的用户是否为本人，防止他人代办冒用。', apiUrl: 'https://arrival-numerate-smartness.ngrok-free.dev/infer_upload', type: 'kyc-dual' },
     agent:   { title: '涉诈通话智能代接模型', icon: 'bot',          desc: '对疑似诈骗来电进行智能代接与对话引导，自动识别诈骗意图、拖延诈骗时间、保护用户免于财产损失。', apiUrl: '/proxy/agent/v1/chat/completions', type: 'chat' },
-    website: { title: '风险网站识别模型',    icon: 'globe',         desc: '输入网站 URL，自动分析页面内容、域名特征、视觉布局等多维信息，识别是否为钓鱼网站或诈骗站点。', apiUrl: '', type: 'url' }
+    website: { title: '风险网站识别模型',    icon: 'globe',         desc: '输入网站 URL，自动分析页面内容、域名特征、视觉布局等多维信息，识别是否为钓鱼网站或诈骗站点。', apiUrl: '/proxy/website/RiskWebsiteController/searchWebsite', type: 'url' }
   };
 
   const menuEl      = document.getElementById('menu');
@@ -1292,10 +1292,20 @@
       errorBox.classList.remove('show');
       resultPanel.style.display = 'block';
       resultBody.innerHTML = `<div class="placeholder"><span class="ph-icon">${ic('clock', 42)}</span>核验中…</div>`;
-      await sleep(1400);
-      const isSame = Math.random() > 0.35;
-      renderKycResult(resultBody, isSame);
-      setLoading(false);
+      try {
+        const formData = new FormData();
+        formData.append('image_1', faceFile);
+        formData.append('image_2', idFile);
+        const resp = await fetch(cfg.apiUrl, { method: 'POST', body: formData });
+        if (!resp.ok) throw new Error(`HTTP ${resp.status} ${resp.statusText}`);
+        const data = await resp.json();
+        if (data.status !== 'success') throw new Error(data.message || '服务返回异常');
+        renderKycResult(resultBody, data.result.similarity);
+      } catch (err) {
+        errorMsg.textContent = `核验请求失败：${err.message}`;
+        errorBox.classList.add('show');
+        resultPanel.style.display = 'none';
+      } finally { setLoading(false); }
     });
 
     function setLoading(on) {
@@ -1305,9 +1315,12 @@
     }
   }
 
-  function renderKycResult(target, isSame) {
-    const score = isSame ? (0.85 + Math.random() * 0.14) : (0.1 + Math.random() * 0.35);
+  // similarity: 0~1 浮点数，≥0.6 判定为同一人
+  function renderKycResult(target, similarity) {
+    const THRESHOLD = 0.6;
+    const score = parseFloat(similarity) || 0;
     const pct = (score * 100).toFixed(2);
+    const isSame = score >= THRESHOLD;
     const cls = isSame ? 'real' : 'fake';
     const icon = isSame ? ic('checkCircle', 26) : ic('xCircle', 26);
     const verdict = isSame ? '核验通过 · 为同一人' : '核验未通过 · 非同一人';
@@ -1315,16 +1328,17 @@
     let html = `<div class="verdict-box">`;
     html += `<div class="verdict-badge ${cls}"><span class="badge-icon">${icon}</span><span>${verdict}</span></div>`;
     html += `<div class="prob-section"><div class="prob-row">
-      <div class="prob-label-row"><span class="pl-name"><span class="dot ${isSame ? 'dot-real' : 'dot-fake'}"></span>相似度</span><span class="pl-pct ${cls}" id="kycConfTxt">0%</span></div>
+      <div class="prob-label-row"><span class="pl-name"><span class="dot ${isSame ? 'dot-real' : 'dot-fake'}"></span>人脸相似度</span><span class="pl-pct ${cls}" id="kycConfTxt">0%</span></div>
       <div class="bar-bg"><div class="bar-fill ${cls}" id="kycBar" style="width:0%"></div></div>
     </div></div>`;
     html += `<div class="summary-block">`;
-    html += isSame ? '人脸照片与身份证正面人像比对通过，确认为同一人，可正常办理业务。'
-                   : '人脸照片与身份证正面人像比对不通过，两者相似度低于阈值，请确认证件与本人一致。';
+    html += isSame
+      ? `人脸照片与身份证正面人像比对通过（相似度 ${pct}%，阈值 ${(THRESHOLD*100).toFixed(0)}%），确认为同一人，可正常办理业务。`
+      : `人脸照片与身份证正面人像比对不通过（相似度 ${pct}%，低于阈值 ${(THRESHOLD*100).toFixed(0)}%），请确认证件与本人一致。`;
     html += `</div>`;
     html += `<hr class="divider"><div class="chip-row">`;
     html += `<span class="chip highlight">${ic('bot', 13)} 实人核验模型</span>`;
-    html += `<span class="chip">${ic('beaker', 12)} 演示模式</span>`;
+    html += `<span class="chip">${ic('target', 12)} 阈值 ${(THRESHOLD*100).toFixed(0)}%</span>`;
     html += `</div></div>`;
     target.innerHTML = html;
     requestAnimationFrame(() => requestAnimationFrame(() => {
@@ -1470,29 +1484,16 @@
       resultPanel.style.display = 'block';
       resultBody.innerHTML = `<div class="placeholder"><span class="ph-icon">${ic('clock', 42)}</span>检测中…</div>`;
       try {
-        await sleep(1300);
-        const riskScore = Math.random();
-        const isRisk = riskScore > 0.5;
-        const verdictIcon = isRisk ? ic('alertTriangle', 26) : ic('checkCircle', 26);
-        let html = `<div class="verdict-box">`;
-        html += `<div class="verdict-badge ${isRisk ? 'fake' : 'real'}"><span class="badge-icon">${verdictIcon}</span><span>${isRisk ? '高风险网站' : '低风险网站'}</span></div>`;
-        html += `<div class="prob-section"><div class="prob-row">
-          <div class="prob-label-row">
-            <span class="pl-name"><span class="dot dot-fake"></span>风险概率</span>
-            <span class="pl-pct fake">${(riskScore*100).toFixed(2)}%</span>
-          </div>
-          <div class="bar-bg"><div class="bar-fill fake" style="width:${(riskScore*100).toFixed(2)}%"></div></div>
-        </div></div>`;
-        html += `<div class="summary-block">`;
-        html += `<strong>目标网址</strong>　${escapeHtml(url)}\n\n`;
-        html += `<strong>检测维度</strong>　域名信誉 · 页面内容 · 视觉纹理 · 黑名单匹配\n\n`;
-        html += `<strong>建议</strong>　${isRisk ? '该网站存在较高风险，请勿输入个人信息或进行支付操作。' : '当前未发现明显风险特征，但仍需注意保护个人隐私。'}`;
-        html += `</div><hr class="divider"><div class="chip-row">`;
-        html += `<span class="chip highlight">${ic('bot', 13)} 风险网站识别</span>`;
-        html += `<span class="chip">${ic('beaker', 12)} 演示模式</span>`;
-        html += `</div></div>`;
-        resultBody.innerHTML = html;
-      } catch (err) { showErr(`检测失败：${err.message}`); }
+        const resp = await fetch(cfg.apiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ url })
+        });
+        if (!resp.ok) throw new Error(`HTTP ${resp.status} ${resp.statusText}`);
+        const data = await resp.json();
+        if (data.code !== '0') throw new Error(data.message || '查询失败，参数异常');
+        renderWebsiteResult(resultBody, data, url);
+      } catch (err) { showErr(`检测失败：${err.message}`); resultPanel.style.display = 'none'; }
       finally { setLoading(false); }
     });
 
@@ -1502,6 +1503,76 @@
       btnText.innerHTML     = on ? '检测中，请稍后…' : ic('refreshCw', 16) + ' 重新检测';
     }
     function showErr(msg) { errorMsg.textContent = msg; errorBox.classList.add('show'); }
+  }
+
+  function renderWebsiteResult(target, data, url) {
+    // status 含义：0=打开浏览器失败 1=网址无法访问 2/3=AI接口异常 4=无风险 5=识别正常(有风险) 6=模型未反馈
+    const STATUS_META = {
+      '0': { verdict: '打开浏览器失败', cls: 'fake', icon: 'alertTriangle', isError: true  },
+      '1': { verdict: '网址无法访问',   cls: 'fake', icon: 'alertTriangle', isError: true  },
+      '2': { verdict: 'AI 接口异常',    cls: 'fake', icon: 'alertTriangle', isError: true  },
+      '3': { verdict: 'AI 接口异常',    cls: 'fake', icon: 'alertTriangle', isError: true  },
+      '4': { verdict: '无风险网站',     cls: 'real', icon: 'checkCircle',   isError: false },
+      '5': { verdict: '',              cls: 'fake', icon: 'alertTriangle', isError: false },
+      '6': { verdict: '模型未反馈结果', cls: 'fake', icon: 'alertTriangle', isError: true  },
+    };
+
+    const item   = (data.data && data.data[0]) || null;
+    const status = item ? String(item.status) : '6';
+    const meta   = STATUS_META[status] || { verdict: '未知状态', cls: 'fake', icon: 'alertCircle', isError: true };
+    const isRisk = status === '5';
+    const accuracy = parseFloat(item && item.accuracy || 0);
+    const pct = (accuracy * 100).toFixed(2);
+    const verdictText = isRisk
+      ? `${item.primaryLabel || '涉诈网站'} · ${item.secondaryLabel || ''}`.replace(/ · $/, '')
+      : meta.verdict;
+
+    let html = `<div class="verdict-box">`;
+    html += `<div class="verdict-badge ${meta.cls}"><span class="badge-icon">${ic(meta.icon, 26)}</span><span>${verdictText}</span></div>`;
+
+    if (meta.isError) {
+      html += `<div class="summary-block">检测过程异常（${meta.verdict}），请确认网址可正常访问后重试。</div>`;
+    } else {
+      if (isRisk) {
+        html += `<div class="prob-section"><div class="prob-row">
+          <div class="prob-label-row">
+            <span class="pl-name"><span class="dot dot-fake"></span>风险置信度</span>
+            <span class="pl-pct fake" id="webConfTxt">0%</span>
+          </div>
+          <div class="bar-bg"><div class="bar-fill fake" id="webBar" style="width:0%"></div></div>
+        </div></div>`;
+      }
+      html += `<div class="summary-block">`;
+      html += `<strong>目标网址</strong>　${escapeHtml(url)}\n\n`;
+      if (isRisk) {
+        html += `<strong>风险类型</strong>　${escapeHtml(item.primaryLabel || '—')} / ${escapeHtml(item.secondaryLabel || '—')}\n\n`;
+        if (item.reason) html += `<strong>风险原因</strong>　${escapeHtml(item.reason)}\n\n`;
+      }
+      if (item && item.timeInterval) html += `<strong>检测耗时</strong>　${item.timeInterval} 秒\n`;
+      html += `<strong>建议</strong>　${isRisk ? '该网站存在较高风险，请勿输入个人信息或进行支付操作。' : '当前未发现明显风险特征，但仍需注意保护个人隐私。'}`;
+      html += `</div>`;
+      if (isRisk && item.imgUrl) {
+        html += `<hr class="divider">
+          <div style="text-align:center;">
+            <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">${ic('image', 13)}&nbsp;页面截图</div>
+            <img src="${escapeHtml(item.imgUrl)}" style="max-width:100%;max-height:240px;border-radius:10px;border:1px solid var(--card-border);object-fit:contain;" alt="网站截图" onerror="this.style.display='none'" />
+          </div>`;
+      }
+    }
+
+    html += `<hr class="divider"><div class="chip-row">`;
+    html += `<span class="chip highlight">${ic('bot', 13)} 风险网站识别模型</span>`;
+    if (item && item.createdTime) html += `<span class="chip">${ic('clock', 12)} ${item.createdTime.replace('T', ' ')}</span>`;
+    html += `</div></div>`;
+    target.innerHTML = html;
+
+    if (isRisk) {
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        const bar = document.getElementById('webBar'), txt = document.getElementById('webConfTxt');
+        if (bar) bar.style.width = pct + '%';
+        if (txt) txt.textContent = pct + '%';
+      }));
+    }
   }
 
   /* ── Utils ── */
